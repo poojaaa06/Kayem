@@ -222,7 +222,7 @@ export default function About() {
                         >
                             <div className="relative h-[60vh] w-full">
                                 <Image
-                                    src="/images/silk-wave.jpg"
+                                    src="/images/saree1.png"
                                     alt="Macro view of silk yarn forming sweeping waves"
                                     fill
                                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -252,11 +252,12 @@ export default function About() {
                                 className="relative overflow-hidden rounded-2xl shadow-xl"
                             >
                                 <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-[#D4AF37]/20 via-[#7A5C1E]/10 to-luxury-ivory">
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <span className="font-display text-[18vw] font-light italic leading-none text-[#7A5C1E] md:text-[9vw]">
-                                            2030
-                                        </span>
-                                    </div>
+                                    <Image
+                                        src="/images/saree2.png"
+                                        alt="2030 Vision"
+                                        fill
+                                        className="object-cover"
+                                    />
                                 </div>
                             </motion.div>
                         </div>

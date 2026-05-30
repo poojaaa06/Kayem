@@ -119,7 +119,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/blogs" className="hover:text-luxury-gold transition-colors duration-300">
+                <a href="/blog" className="hover:text-luxury-gold transition-colors duration-300">
                   Blogs
                 </a>
               </li>
@@ -147,7 +147,7 @@ export default function Footer() {
                   Instagram
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a href="#" className="hover:text-luxury-gold transition-colors duration-300">
                   LinkedIn
                 </a>
@@ -156,7 +156,7 @@ export default function Footer() {
                 <a href="#" className="hover:text-luxury-gold transition-colors duration-300">
                   Facebook
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
 

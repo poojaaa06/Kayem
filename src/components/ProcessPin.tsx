@@ -48,8 +48,8 @@ export function ProcessPin() {
                 <div className="absolute inset-0 bg-gradient-to-b from-luxury-cream/80 via-transparent to-luxury-cream/60" />
             </div>
 
-            {/* Header */}
-            <div className="relative z-10 px-6 md:px-12 mb-10">
+            {/* Header — both lines share the same px-6 md:px-16 gutter */}
+            <div className="relative z-10 px-6 md:px-16 mb-10">
                 <p className="text-[12px] uppercase tracking-[0.4em] text-[#7A5C1E] mb-3 flex items-center gap-2">
                     The Process
                 </p>
@@ -64,17 +64,21 @@ export function ProcessPin() {
                 </div>
             </div>
 
-            {/* Horizontal scroll strip */}
+            {/* Scroll strip — first card has same left offset as the header text */}
             <div
                 ref={stripRef}
-                className="relative z-10 flex gap-6 overflow-x-auto px-6 md:px-12 pb-6 snap-x snap-mandatory"
-                style={{ scrollbarWidth: "none" }}
+                className="relative z-10 flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory"
+                style={{
+                    scrollbarWidth: "none",
+                    paddingLeft: "clamp(1.5rem, 4vw, 4rem)",
+                    paddingRight: "clamp(1.5rem, 4vw, 4rem)",
+                }}
             >
                 {steps.map((s, i) => (
                     <div
                         key={s.n}
                         className="relative shrink-0 w-[82vw] md:w-[50vw] rounded-3xl overflow-hidden shadow-xl snap-start"
-                        style={{ height: "clamp(320px, 55vh, 520px)" }}
+                        style={{ height: "clamp(240px, 38vh, 380px)" }}
                     >
                         <Image
                             src={s.img}
@@ -85,7 +89,6 @@ export function ProcessPin() {
                             priority={i === 0}
                         />
 
-                        {/* Dark gradient overlay for text readability */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
                         <div className="relative h-full flex flex-col justify-between p-8 md:p-12">
@@ -94,7 +97,6 @@ export function ProcessPin() {
                                     Stage {s.n}
                                 </span>
                             </div>
-
                             <div>
                                 <h3 className="font-display text-6xl md:text-7xl font-light text-white mb-3">
                                     {s.t}
@@ -109,6 +111,7 @@ export function ProcessPin() {
                     </div>
                 ))}
 
+                {/* Trailing spacer so last card doesn't hug the right edge */}
                 <div className="shrink-0 w-6 md:w-12" />
             </div>
 

@@ -67,7 +67,7 @@ type Post = {
 
 const featured: Post = {
     slug: "anatomy-of-a-thread",
-    img: "https://images.unsplash.com/photo-1617470703223-e1e3e4e3f0db?w=1200&q=80",
+    img: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&q=80",
     category: "Material Study",
     title: "The Anatomy of a Thread: Light, Twist, and the Geometry of Touch",
     excerpt: "Long before a fabric drapes, the yarn decides how it will move. A meditation on denier, lustre, and the quiet engineering inside every filament we spin in Surat.",
@@ -109,7 +109,7 @@ const posts: Post[] = [
     },
     {
         slug: "the-yarn-inspectors-quiet-hour",
-        img: "https://images.unsplash.com/photo-1586495777744-4e6232bf4803?w=900&q=80",
+        img: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=900&q=80",
         category: "Hands",
         title: "The Yarn Inspector's Quiet Hour",
         excerpt: "What machines still cannot feel — a portrait of the people who finger-read every cone before it ships.",
@@ -149,12 +149,12 @@ export default function Blog() {
             <Navbar forceDarkLogo={true} />
             <main className="relative min-h-screen bg-luxury-cream text-luxury-charcoal">
 
-                {/* ── HERO with parallax background image ── */}
-                <section ref={heroRef} className="relative min-h-[70vh] overflow-hidden pt-56 md:h-[80vh] md:pt-0">
-                    {/* Background image — put your image at /public/images/blog-hero.png */}
+                {/* ── HERO with parallax background image - MATCHING PRODUCTS PAGE STYLE ── */}
+                <section ref={heroRef} className="relative min-h-[85vh] overflow-hidden pt-56 md:h-[90vh] md:pt-0">
+                    {/* Background image — replace with your blog-hero image */}
                     <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
                         <Image
-                            src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=1800&q=80"
+                            src="/images/blog-hero.png"
                             alt="Yarn and textile journal"
                             fill
                             className="object-cover"
@@ -162,39 +162,43 @@ export default function Blog() {
                         />
                     </motion.div>
 
-                    {/* Gradient + glow overlays */}
+                    {/* Rich multi-layered gradients - matching Products page */}
                     <div className="absolute inset-0">
-                        <div className="absolute inset-0 bg-gradient-to-b from-luxury-cream/85 via-luxury-cream/45 to-luxury-cream" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-luxury-cream/90 via-luxury-cream/50 to-luxury-cream" />
                         <div className="absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-[#D4AF37]/20 blur-3xl" />
                         <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-[#7A5C1E]/15 blur-3xl" />
                     </div>
 
                     <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-start justify-end px-6 pb-24 md:px-16">
-                        <motion.div
+                        <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4, duration: 1 }}
-                            className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]"
+                            transition={{ delay: 0.6, duration: 1 }}
+                            className="mb-6 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]"
                         >
-                            <span className="h-px w-12 bg-[#7A5C1E]/50" />
-                            The Kayem Journal
-                        </motion.div>
+                            — The Kayem Journal
+                        </motion.p>
 
-                        <motion.h1
-                            initial={{ opacity: 0, y: 40 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.6, duration: 1.2, ease: [0.2, 0.8, 0.2, 1] }}
-                            className="max-w-5xl font-display text-[12vw] font-light leading-[0.9] md:text-[8vw] mt-6"
-                        >
-                            Field notes <br />
-                            <span className="italic text-[#7A5C1E]">on fibre & light.</span>
-                        </motion.h1>
+                        <h1 className="max-w-6xl font-display text-[12vw] font-light leading-[0.9] md:text-[7.5vw]">
+                            {["Field", "notes", "on", "fibre", "&", "light."].map((w, i) => (
+                                <span key={i} className="mr-[0.25em] inline-block overflow-hidden">
+                                    <motion.span
+                                        initial={{ y: "110%" }}
+                                        animate={{ y: 0 }}
+                                        transition={{ delay: 0.4 + i * 0.08, duration: 1.1, ease: [0.2, 0.8, 0.2, 1] }}
+                                        className={`inline-block ${i === 2 || i === 5 ? "italic text-[#7A5C1E]" : "text-luxury-charcoal"}`}
+                                    >
+                                        {w}
+                                    </motion.span>
+                                </span>
+                            ))}
+                        </h1>
 
                         <motion.p
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: 1, duration: 1 }}
-                            className="mt-10 max-w-xl font-serif text-lg leading-relaxed text-luxury-charcoal/70"
+                            transition={{ delay: 1.2, duration: 1 }}
+                            className="mt-10 max-w-xl font-serif leading-relaxed text-luxury-charcoal/70"
                         >
                             Essays, studio diaries, and quiet observations from four decades of
                             making speciality yarn — written by the hands behind the spindle.

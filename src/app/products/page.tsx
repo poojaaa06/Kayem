@@ -66,7 +66,7 @@ const families: {
         {
             family: "Nylon Yarns",
             tag: "Series N",
-            img: "/images/yarn-1.jpg",
+            img: "/images/NYLON.jpeg",
             bgGradient: "from-[#1a1a2e]/5 via-[#16213e]/3 to-transparent",
             blurb: "Resilient, lustrous, and engineered for movement — the workhorse of fancy fabric.",
             items: [
@@ -79,7 +79,7 @@ const families: {
         {
             family: "Viscose Yarns",
             tag: "Series V",
-            img: "/images/yarn-2.jpg",
+            img: "/images/viscous.png",
             bgGradient: "from-[#2d1b0e]/5 via-[#3d2b1a]/3 to-transparent",
             blurb: "Soft, breathable, deeply absorbent of dye — the fibre of poetry and saree silk.",
             items: [
@@ -90,7 +90,7 @@ const families: {
         {
             family: "Other Yarns",
             tag: "Series K",
-            img: "/images/yarn-3.jpg",
+            img: "/images/dopedyed.jpeg",
             bgGradient: "from-[#0f0f0f]/5 via-[#1a1a1a]/3 to-transparent",
             blurb: "From dope-dyed polyester to dyed cationic — colour, character, and depth on request.",
             items: [
