@@ -215,8 +215,8 @@ export default function Blog() {
                                 key={c}
                                 onClick={() => setActive(c)}
                                 className={`relative px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.25em] rounded-full border transition-all duration-500 ${active === c
-                                        ? "border-[#7A5C1E]/50 text-[#7A5C1E] bg-[#7A5C1E]/5 shadow-md"
-                                        : "border-[#7A5C1E]/20 text-luxury-charcoal/60 hover:text-[#7A5C1E] hover:border-[#7A5C1E]/30"
+                                    ? "border-[#7A5C1E]/50 text-[#7A5C1E] bg-[#7A5C1E]/5 shadow-md"
+                                    : "border-[#7A5C1E]/20 text-luxury-charcoal/60 hover:text-[#7A5C1E] hover:border-[#7A5C1E]/30"
                                     }`}
                             >
                                 {c}
