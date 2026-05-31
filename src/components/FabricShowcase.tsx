@@ -135,7 +135,7 @@ export default function FabricShowcase() {
             </p>
             <h2 className="font-display text-5xl md:text-7xl font-light leading-[0.95] text-luxury-charcoal">
               Luxury Weaves.<br />
-              <span className="italic text-luxury-gold">Explore the Texture</span>
+              <span className="italic text-luxury-gold">Created from our finest yarns</span>
             </h2>
           </div>
           <p className="max-w-md text-luxury-charcoal/60 leading-relaxed font-serif text-md">
@@ -183,7 +183,7 @@ export default function FabricShowcase() {
                   </p>
 
                   {/* Specifications Table */}
-                  <div className="grid grid-cols-2 gap-4 pt-4 text-[10px] md:text-xs tracking-luxury text-luxury-charcoal/80 uppercase">
+                  {/* <div className="grid grid-cols-2 gap-4 pt-4 text-[10px] md:text-xs tracking-luxury text-luxury-charcoal/80 uppercase">
                     <div>
                       <span className="text-[#7A5C1E] font-medium">DENSITY</span>
                       <span className="font-sans font-light text-[11px] block mt-1">{activeFabric.density}</span>
@@ -196,7 +196,7 @@ export default function FabricShowcase() {
                       <span className="text-[#7A5C1E] block font-medium">COMPOSITION</span>
                       <span className="font-sans font-light text-[11px] block mt-1 normal-case">{activeFabric.composition}</span>
                     </div>
-                  </div>
+                  </div> */}
                 </motion.div>
               </AnimatePresence>
             </div>

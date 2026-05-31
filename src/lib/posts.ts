@@ -1,7 +1,7 @@
 export const allPosts = [
     {
         slug: "anatomy-of-a-thread",
-        img: "https://images.unsplash.com/photo-1617470703223-e1e3e4e3f0db?w=1200&q=80",
+        img: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&q=80",
         category: "Material Study",
         title: "The Anatomy of a Thread: Light, Twist, and the Geometry of Touch",
         excerpt:
@@ -28,7 +28,7 @@ export const allPosts = [
             },
             {
                 type: "image",
-                src: "https://images.unsplash.com/photo-1617470703223-e1e3e4e3f0db?w=1200&q=80",
+                src: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&q=8",
                 caption: "Cross-sections of trilobal, round, and hollow filaments under polarised light — each profile bends incident light differently.",
             },
             {
@@ -140,7 +140,7 @@ export const allPosts = [
     },
     {
         slug: "the-yarn-inspectors-quiet-hour",
-        img: "https://images.unsplash.com/photo-1586495777744-4e6232bf4803?w=900&q=80",
+        img: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=900&q=80",
         category: "Hands",
         title: "The Yarn Inspector's Quiet Hour",
         excerpt:

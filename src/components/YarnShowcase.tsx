@@ -7,24 +7,24 @@ import Image from "next/image";
 const yarns = [
     {
         img: "/images/NYLON.jpeg",
-        name: "Nylon Fibre",
+        name: "Nylon Yarn",
         code: "NY—01",
         desc: "Premium nylon air textured yarn with excellent coverage, bulk, and soft hand feel.",
-        count: "50D — 500D"
+        count: ""
     },
     {
         img: "/images/viscous.png",
-        name: "Viscose Fibre",
+        name: "Viscose Yarn",
         code: "VS—03",
         desc: "Luxurious viscose fancy yarns with exceptional drape, sheen, and natural comfort.",
-        count: "50D — 500D"
+        count: ""
     },
     {
         img: "/images/dopedyed.jpeg",
-        name: "Polyester Fibre",
+        name: "Polyester Yarn",
         code: "PY—04",
         desc: "Dope dyed polyester yarns with vibrant, long-lasting colorfastness and strength.",
-        count: "50D — 500D"
+        count: ""
     },
 ];
 

@@ -67,7 +67,7 @@ type Post = {
 
 const featured: Post = {
     slug: "anatomy-of-a-thread",
-    img: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&q=80",
+    img: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=900&q=80",
     category: "Material Study",
     title: "The Anatomy of a Thread: Light, Twist, and the Geometry of Touch",
     excerpt: "Long before a fabric drapes, the yarn decides how it will move. A meditation on denier, lustre, and the quiet engineering inside every filament we spin in Surat.",

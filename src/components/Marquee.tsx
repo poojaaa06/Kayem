@@ -1,10 +1,10 @@
 const phrases = [
   "Premium Quality ",
   "Market Leader",
-  "Organic Pima",
+  "Polystere Catonic",
   "Nylon Yarns",
-  "Viscose Yarns",
-  "Heritage Weave",
+  "Viscose Yarns"
+
 ];
 
 export function Marquee() {

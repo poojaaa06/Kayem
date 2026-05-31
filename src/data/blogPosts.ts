@@ -14,7 +14,7 @@ export type BlogPost = {
 export const blogPosts: BlogPost[] = [
     {
         slug: "anatomy-of-a-thread",
-        img: "/images/blog-1.jpg",
+        img: "/images/saree1.png",
         category: "Material Study",
         title: "The Anatomy of a Thread: Light, Twist, and the Geometry of Touch",
         excerpt: "Long before a fabric drapes, the yarn decides how it will move. A meditation on denier, lustre, and the quiet engineering inside every filament we spin in Surat.",
