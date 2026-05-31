@@ -9,22 +9,22 @@ export default function SequenceCanvas() {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    // Attempt to play video as soon as possible
-    const playVideo = async () => {
-      if (videoRef.current && !isPlaying) {
-        try {
-          await videoRef.current.play();
-          setIsPlaying(true);
-        } catch (err) {
-          console.log("Autoplay prevented:", err);
-          // iOS requires user interaction
-        }
-      }
-    };
+  // useEffect(() => {
+  //   // Attempt to play video as soon as possible
+  //   const playVideo = async () => {
+  //     if (videoRef.current && !isPlaying) {
+  //       try {
+  //         await videoRef.current.play();
+  //         setIsPlaying(true);
+  //       } catch (err) {
+  //         console.log("Autoplay prevented:", err);
+  //         // iOS requires user interaction
+  //       }
+  //     }
+  //   };
 
-    playVideo();
-  }, [isPlaying]);
+  //   playVideo();
+  // }, [isPlaying]);
 
   // Handle visibility change (when tab becomes active again)
   useEffect(() => {
@@ -51,25 +51,19 @@ export default function SequenceCanvas() {
           className={`absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2 transition-opacity duration-700 ${videoLoaded ? "opacity-0" : "opacity-100"
             }`}
         />
-
         <video
           ref={videoRef}
-          poster="/images/3dtransform-poster.jpg"
+          autoPlay          // ← KEY FIX: React's autoPlay prop
           loop
           muted
-          playsInline
-          preload="metadata"
+          playsInline       // ← Critical for iOS Safari
+          preload="auto"    // ← was "metadata" — too conservative for Safari
+          poster="/images/3dtransform-poster.jpg"
           onLoadedData={() => setVideoLoaded(true)}
-          onCanPlayThrough={() => {
-            // Video is fully buffered
-            if (videoRef.current) {
-              videoRef.current.play().catch(e => console.log("Play failed:", e));
-            }
-          }}
+          onCanPlay={() => videoRef.current?.play()}  // ← onCanPlay fires earlier than onCanPlayThrough
           className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2"
         >
           <source src="/images/3dtransform-compressed.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
 
         {/* Overlay for better text readability */}
