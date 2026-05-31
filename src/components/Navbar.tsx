@@ -49,7 +49,7 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 transition-all duration-300 h-16 md:h-20 flex items-center ${isScrolled ? "border-b border-white/10 backdrop-blur-md bg-black/20" : ""
+        className={`fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 transition-all duration-300 h-16 md:h-20 flex items-center ${isScrolled ? "border-b border-white/10 backdrop-blur-md bg-black/20 text-white" : ""
           }`}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
@@ -60,7 +60,7 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
                 src="/images/l.png"
                 alt="Logo"
                 className="h-24 md:h-28 w-auto object-contain"
-                style={{ filter: forceDarkLogo || isScrolled ? "brightness(0) invert(0)" : "brightness(0) invert(1)" }}
+                style={{ filter: forceDarkLogo || isScrolled ? "brightness(0) invert(1)" : "brightness(0) invert(0)" }}
               />
             </a>
           </div>
@@ -82,20 +82,20 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
           {/* Mobile Hamburger Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden relative z-20 h-8 w-8 flex flex-col items-center justify-center gap-1.5 rounded-full transition-all duration-300"
+            className="lg:hidden relative z-20 h-8 w-8 flex flex-col items-center justify-center gap-1.5 rounded-full transition-all duration-300 "
             aria-label="Toggle menu"
           >
             <span
               className={`block h-0.5 w-5 rounded-full transition-all duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""
-                } ${forceDarkLogo || isScrolled ? "bg-luxury-charcoal" : "bg-white"}`}
+                } ${forceDarkLogo || isScrolled ? "bg-white" : "bg-black"}`}
             />
             <span
               className={`block h-0.5 w-5 rounded-full transition-all duration-300 ${mobileMenuOpen ? "opacity-0" : ""
-                } ${forceDarkLogo || isScrolled ? "bg-luxury-charcoal" : "bg-white"}`}
+                } ${forceDarkLogo || isScrolled ? "bg-white" : "bg-black"}`}
             />
             <span
               className={`block h-0.5 w-5 rounded-full transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
-                } ${forceDarkLogo || isScrolled ? "bg-luxury-charcoal" : "bg-white"}`}
+                } ${forceDarkLogo || isScrolled ? "bg-white" : "bg-black"}`}
             />
           </button>
         </div>

@@ -127,7 +127,7 @@ export default function About() {
 
     return (
         <>
-            <Navbar forceDarkLogo={true} />
+            <Navbar />
             <main className="relative min-h-screen bg-luxury-cream text-luxury-charcoal">
                 {/* HERO */}
                 <section ref={heroRef} className="relative min-h-[85vh] overflow-hidden pt-56 md:h-[90vh] md:pt-0">

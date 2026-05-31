@@ -157,7 +157,7 @@ export default function Products() {
 
     return (
         <>
-            <Navbar forceDarkLogo={true} />
+            <Navbar />
             <main className="relative min-h-screen bg-luxury-cream text-luxury-charcoal">
                 {/* HERO - With background image and parallax like About page */}
                 <section ref={heroRef} className="relative min-h-[85vh] overflow-hidden pt-56 md:h-[90vh] md:pt-0">

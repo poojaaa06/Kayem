@@ -146,7 +146,7 @@ export default function Blog() {
 
     return (
         <>
-            <Navbar forceDarkLogo={true} />
+            <Navbar />
             <main className="relative min-h-screen bg-luxury-cream text-luxury-charcoal">
 
                 {/* ── HERO with parallax background image - MATCHING PRODUCTS PAGE STYLE ── */}

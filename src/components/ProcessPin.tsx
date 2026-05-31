@@ -9,7 +9,7 @@ const steps = [
         t: "POY",
         subtitle: "Partially Oriented Yarn",
         img: "/images/poy.png",
-        d: "The journey starts with premium nylon chips, carefully processed into POY. This is the foundation of every yarn we create — engineered for strength, consistency, and superior quality.",
+        d: "The journey starts with premium nylon chips, carefully processed into POY. This is the foundation of every yarn we create.",
     },
     {
         n: "02",

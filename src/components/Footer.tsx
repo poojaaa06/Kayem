@@ -5,6 +5,7 @@ import { ArrowRight, X } from "lucide-react";
 
 export default function Footer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const ACCESS_KEY = "d41237a7-74d8-484e-be57-97c81194f8ae";
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -28,14 +29,38 @@ export default function Footer() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call - replace with your actual endpoint
-    setTimeout(() => {
-      console.log("Form Data:", formData);
-      setIsSubmitting(false);
-      setSubmitSuccess(true);
-      setTimeout(() => {
-        setIsModalOpen(false);
-        setSubmitSuccess(false);
+    try {
+      const formObject = {
+        access_key: "d41237a7-74d8-484e-be57-97c81194f8ae",
+
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        office_name: formData.officeName,
+        office_address: formData.officeAddress,
+        requirement: formData.requirement,
+        additional_message: formData.additionalMessage,
+
+        subject: "New Kayem Enquiry",
+      };
+
+      const response = await fetch(
+        "https://api.web3forms.com/submit",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(formObject),
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitSuccess(true);
+
         setFormData({
           name: "",
           phone: "",
@@ -43,10 +68,20 @@ export default function Footer() {
           officeName: "",
           officeAddress: "",
           requirement: "",
-          additionalMessage: ""
+          additionalMessage: "",
         });
-      }, 2000);
-    }, 1500);
+
+        setTimeout(() => {
+          setSubmitSuccess(false);
+          setIsModalOpen(false);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send enquiry.");
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
