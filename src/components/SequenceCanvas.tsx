@@ -5,29 +5,69 @@ import { motion } from "framer-motion";
 const headline = ["Essence", "of", "Beautiful", "Fabric"];
 
 export default function SequenceCanvas() {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const rafRef = useRef<number>(0);
   const [videoLoaded, setVideoLoaded] = useState(false);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    const video = document.createElement("video");
+    videoRef.current = video;
 
-    // iOS Safari requires a user gesture OR this programmatic trigger
-    // Setting these attributes at runtime bypasses some autoplay blocks
+    video.src = "/images/3dtransform-compressed.mp4";
     video.muted = true;
+    video.loop = true;
     video.playsInline = true;
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("webkit-playsinline", "true");
+    video.preload = "metadata";
 
-    const tryPlay = () => {
-      video.play().catch(() => { });
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const drawFrame = () => {
+      if (video.readyState >= 2) {
+        const { videoWidth, videoHeight } = video;
+        const canvasW = canvas.width;
+        const canvasH = canvas.height;
+
+        // Cover logic — same as object-cover
+        const scale = Math.max(canvasW / videoWidth, canvasH / videoHeight);
+        const drawW = videoWidth * scale;
+        const drawH = videoHeight * scale;
+        const offsetX = (canvasW - drawW) / 2;
+        const offsetY = (canvasH - drawH) / 2;
+
+        ctx.drawImage(video, offsetX, offsetY, drawW, drawH);
+      }
+      rafRef.current = requestAnimationFrame(drawFrame);
     };
 
-    if (video.readyState >= 3) {
-      tryPlay();
-    } else {
-      video.addEventListener("canplay", tryPlay, { once: true });
-    }
+    const handleCanPlay = () => {
+      video.play().then(() => {
+        setVideoLoaded(true);
+        drawFrame();
+      }).catch(() => { });
+    };
 
-    return () => video.removeEventListener("canplay", tryPlay);
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+    video.addEventListener("canplay", handleCanPlay, { once: true });
+    video.load();
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("resize", resizeCanvas);
+      video.pause();
+      video.src = "";
+    };
   }, []);
 
   return (
@@ -35,33 +75,20 @@ export default function SequenceCanvas() {
       {/* Background */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
 
-        {/* Poster shown instantly while video loads — prevents black flash */}
+        {/* Poster image — fades out once canvas is drawing */}
         <img
-          src="/images/3dtransform_001.png"
+          src="/images/3dtransform-poster.jpg"
           alt=""
           fetchPriority="high"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
             }`}
         />
 
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"       // Loads just enough to show first frame fast
-          poster="/images/3dtransform-poster.jpg"
-          onCanPlay={() => {
-            videoRef.current?.play().catch(() => { });
-          }}
-          onPlaying={() => setVideoLoaded(true)}  // Fade out poster only when actually playing
-          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2"
-        >
-          {/* WebM loads ~60% faster than MP4 on supported browsers */}
-          <source src="/images/3dtransform.webm" type="video/webm" />
-          <source src="/images/3dtransform.mp4" type="video/mp4" />
-        </video>
+        {/* Canvas — iOS never shows play button over this */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full"
+        />
 
         <div className="absolute inset-0 bg-black/40" />
       </div>
