@@ -247,7 +247,7 @@ export default function Products() {
                                     <p className="mb-4 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]">
                                         — Family 0{fi + 1}
                                     </p>
-                                    <h2 className="font-display text-5xl font-light leading-[0.95] text-luxury-charcoal md:text-7xl">
+                                    <h2 className="font-display text-4xl font-light leading-[0.95] text-luxury-charcoal md:text-7xl">
                                         {fam.family.split(" ")[0]}{" "}
                                         <span className="italic text-[#7A5C1E]">{fam.family.split(" ").slice(1).join(" ")}</span>
                                     </h2>

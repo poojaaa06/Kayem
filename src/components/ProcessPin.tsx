@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import Image from "next/image";
-import { motion, useInView } from "framer-motion";
 
 const steps = [
     {
@@ -39,7 +38,7 @@ export function ProcessPin() {
     const stripRef = useRef<HTMLDivElement>(null);
 
     return (
-        <section id="process" className="relative bg-luxury-cream py-20 md:py-28 overflow-hidden">
+        <section id="process" className="relative bg-luxury-cream py-12 md:py-28 overflow-hidden">
             {/* Section BG */}
             <div className="absolute inset-0 pointer-events-none">
                 <Image
@@ -52,12 +51,12 @@ export function ProcessPin() {
             </div>
 
             {/* Header */}
-            <div className="relative z-10 mx-auto mb-12 md:mb-16 px-10">
-                <p className="text-[12px] uppercase tracking-[0.4em] text-[#7A5C1E] mb-3">
+            <div className="relative z-10 mx-auto mb-8 md:mb-16 px-5 md:px-10">
+                <p className="text-[10px] md:text-[12px] uppercase tracking-[0.3em] md:tracking-[0.4em] text-[#7A5C1E] mb-2 md:mb-3">
                     From Yarn to Fabric
                 </p>
-                <div className="flex items-end justify-between gap-8">
-                    <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-light leading-[1.05] text-luxury-charcoal max-w-2xl">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-8">
+                    <h2 className="font-display text-3xl md:text-4xl lg:text-6xl font-light leading-[1.2] md:leading-[1.05] text-luxury-charcoal max-w-2xl">
                         The journey of{" "}
                         <span className="text-[#7A5C1E] italic">craftsmanship.</span>
                     </h2>
@@ -71,88 +70,72 @@ export function ProcessPin() {
             {/* Horizontal scroll strip */}
             <div
                 ref={stripRef}
-                className="relative z-10 flex gap-6 overflow-x-auto pb-8 snap-x snap-mandatory"
+                className="relative z-10 flex gap-4 md:gap-6 overflow-x-auto pb-6 md:pb-8 snap-x snap-mandatory"
                 style={{ scrollbarWidth: "none" }}
             >
                 {/* Leading spacer */}
-                <div className="shrink-0 w-6 md:w-12 lg:w-16" aria-hidden />
+                <div className="shrink-0 w-4 md:w-12 lg:w-16" aria-hidden />
 
                 {steps.map((step, i) => (
-                    <StepCard key={step.n} step={step} index={i} />
+                    <StepCard key={step.n} step={step} />
                 ))}
 
                 {/* Trailing spacer */}
-                <div className="shrink-0 w-6 md:w-12 lg:w-16" aria-hidden />
+                <div className="shrink-0 w-4 md:w-12 lg:w-16" aria-hidden />
             </div>
 
             {/* Mobile hint */}
-            <p className="relative z-10 md:hidden text-center text-xs uppercase tracking-[0.25em] text-luxury-charcoal/30 mt-6">
-                Swipe to explore
+            <p className="relative z-10 md:hidden text-center text-[10px] uppercase tracking-[0.25em] text-luxury-charcoal/40 mt-4">
+                Swipe to explore →
             </p>
         </section>
     );
 }
 
-function StepCard({ step, index }: { step: typeof steps[0]; index: number }) {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { once: true, amount: 0.2 });
-
+function StepCard({ step }: { step: typeof steps[0] }) {
     return (
-        <motion.div
-            ref={ref}
-            initial={{ opacity: 0, y: 24 }}
-            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-            transition={{ duration: 0.7, delay: index * 0.08, ease: [0.2, 0.8, 0.2, 1] }}
-            className="relative shrink-0 snap-start flex flex-col rounded-3xl overflow-hidden shadow-xl bg-white/40 backdrop-blur-sm group"
+        <div className="relative shrink-0 snap-start flex flex-col rounded-2xl md:rounded-3xl overflow-hidden shadow-xl bg-white/40 backdrop-blur-sm group"
             style={{
-                width: "clamp(360px, 80vw, 560px)",
-                height: "clamp(520px, 70vh, 640px)",
+                width: "clamp(280px, 85vw, 560px)",
+                height: "clamp(460px, 65vh, 640px)",
             }}
         >
-            {/* Image — fixed 60% height for equal image sizes */}
-            <div className="relative overflow-hidden" style={{ height: "60%" }}>
+            {/* Image — responsive height */}
+            <div className="relative overflow-hidden" style={{ height: "clamp(240px, 55%, 380px)" }}>
                 <Image
                     src={step.img}
                     alt={step.t}
                     fill
                     className="object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-105"
-                    sizes="560px"
+                    sizes="(max-width: 768px) 85vw, 560px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/5" />
 
                 {/* Stage badge */}
-                <div className="absolute top-5 left-5">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.35em] font-bold text-white bg-[#7A5C1E]/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                <div className="absolute top-4 md:top-5 left-4 md:left-5">
+                    <span className="font-mono text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.35em] font-bold text-white bg-[#7A5C1E]/80 backdrop-blur-sm px-2.5 md:px-3 py-1 md:py-1.5 rounded-full">
                         Stage {step.n}
                     </span>
                 </div>
 
-                {/* Shimmer on hover */}
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#D4AF37]/15 to-transparent transition-transform duration-[1.2s] group-hover:translate-x-full" />
+                {/* Shimmer on hover - hidden on mobile for performance */}
+                <div className="hidden md:block absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#D4AF37]/15 to-transparent transition-transform duration-[1.2s] group-hover:translate-x-full" />
             </div>
 
-            {/* Content — fixed 40% height */}
-            <div className="flex flex-col justify-between flex-1 p-7 md:p-8" style={{ height: "40%" }}>
+            {/* Content — responsive padding and spacing */}
+            <div className="flex flex-col justify-between flex-1 p-5 md:p-8">
                 <div>
-                    <p className="font-serif text-[11px] italic text-[#7A5C1E] mb-2 tracking-wide">
+                    <p className="font-serif text-[10px] md:text-[11px] italic text-[#7A5C1E] mb-1.5 md:mb-2 tracking-wide">
                         {step.subtitle}
                     </p>
-                    <h3 className="font-display text-4xl md:text-5xl font-light leading-none text-luxury-charcoal mb-3">
+                    <h3 className="font-display text-3xl md:text-4xl lg:text-5xl font-light leading-[1.1] md:leading-none text-luxury-charcoal mb-2 md:mb-3">
                         {step.t}
                     </h3>
-                    <p className="font-serif text-sm md:text-base leading-relaxed text-luxury-charcoal/65 line-clamp-3">
+                    <p className="font-serif text-xs md:text-sm lg:text-base leading-relaxed text-luxury-charcoal/65 line-clamp-4 md:line-clamp-3">
                         {step.d}
                     </p>
                 </div>
-
-                {/* Bottom rule with step number */}
-                <div className="flex items-center justify-between pt-4 border-t border-[#7A5C1E]/15 mt-3">
-                    <span className="font-mono text-[32px] font-light text-[#7A5C1E]/20 leading-none">
-                        {step.n}
-                    </span>
-                    <span className="inline-block h-px w-8 bg-[#7A5C1E]/30" />
-                </div>
             </div>
-        </motion.div>
+        </div>
     );
 }
