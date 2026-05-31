@@ -189,7 +189,7 @@ export default function Products() {
                         </motion.p>
                         <h1 className="max-w-6xl font-display text-[12vw] font-light leading-[0.9] md:text-[7.5vw]">
                             {["A", "spectrum", "of", "speciality", "yarn."].map((w, i) => (
-                                <span key={i} className="mr-[0.25em] inline-block overflow-hidden">
+                                <span key={i} className="mr-[0.25em] inline-block">
                                     <motion.span
                                         initial={{ y: "110%" }}
                                         animate={{ y: 0 }}

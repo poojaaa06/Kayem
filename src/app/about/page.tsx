@@ -169,7 +169,7 @@ export default function About() {
                         </motion.p>
                         <h1 className="max-w-5xl font-display text-[12vw] font-light leading-[0.9] md:text-[8vw]">
                             {["The", "house", "behind", "the", "thread."].map((w, i) => (
-                                <span key={i} className="mr-[0.25em] inline-block overflow-hidden">
+                                <span key={i} className="mr-[0.25em] inline-block ">
                                     <motion.span
                                         initial={{ y: "110%" }}
                                         animate={{ y: 0 }}

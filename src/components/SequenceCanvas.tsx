@@ -43,7 +43,7 @@ export default function SequenceCanvas() {
               <span
                 className="text-[#7A5C1E] dark:text-luxury-gold"
               >
-                Since 1985 — Gujarat, India
+                Since 1985
               </span>
               <span className="h-px w-6 sm:w-10 bg-luxury-gold/60" />
             </motion.div>
