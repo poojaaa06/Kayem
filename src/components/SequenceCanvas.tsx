@@ -5,40 +5,54 @@ import { motion } from "framer-motion";
 const headline = ["Essence", "of", "Beautiful", "Fabric"];
 
 export default function SequenceCanvas() {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // useEffect(() => {
-  //   // Attempt to play video as soon as possible
-  //   const playVideo = async () => {
-  //     if (videoRef.current && !isPlaying) {
-  //       try {
-  //         await videoRef.current.play();
-  //         setIsPlaying(true);
-  //       } catch (err) {
-  //         console.log("Autoplay prevented:", err);
-  //         // iOS requires user interaction
-  //       }
-  //     }
-  //   };
-
-  //   playVideo();
-  // }, [isPlaying]);
-
-  // Handle visibility change (when tab becomes active again)
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden && videoRef.current && !isPlaying) {
-        videoRef.current.play().catch(e => console.log("Play failed:", e));
-      }
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Force play the video
+    const forcePlay = () => {
+      video.play().catch(e => {
+        console.log("Play failed:", e);
+        // Safari requires user interaction
+      });
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    // Try to play immediately
+    forcePlay();
+
+    // Also try on any user interaction (Safari workaround)
+    const handleInteraction = () => {
+      forcePlay();
+      document.removeEventListener("touchstart", handleInteraction);
+      document.removeEventListener("click", handleInteraction);
     };
-  }, [isPlaying]);
+
+    document.addEventListener("touchstart", handleInteraction);
+    document.addEventListener("click", handleInteraction);
+
+    // Intersection Observer to play when video comes into view
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch(e => console.log("Play on view:", e));
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("touchstart", handleInteraction);
+      document.removeEventListener("click", handleInteraction);
+    };
+  }, []);
 
   return (
     <div id="process" className="relative w-full h-screen">
@@ -48,19 +62,19 @@ export default function SequenceCanvas() {
         <img
           src="/images/3dtransform-poster.jpg"
           alt="Background"
+          fetchPriority="high"
           className={`absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2 transition-opacity duration-700 ${videoLoaded ? "opacity-0" : "opacity-100"
             }`}
         />
+
         <video
           ref={videoRef}
-          autoPlay          // ← KEY FIX: React's autoPlay prop
           loop
           muted
-          playsInline       // ← Critical for iOS Safari
-          preload="auto"    // ← was "metadata" — too conservative for Safari
+          playsInline
+          preload="auto"
           poster="/images/3dtransform-poster.jpg"
           onLoadedData={() => setVideoLoaded(true)}
-          onCanPlay={() => videoRef.current?.play()}  // ← onCanPlay fires earlier than onCanPlayThrough
           className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2"
         >
           <source src="/images/3dtransform-compressed.mp4" type="video/mp4" />

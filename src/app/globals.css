@@ -193,14 +193,7 @@ body {
   }
 }
 
-/* Force video to play on Safari */
-video {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Hide all video controls on iOS */
+/* Hide Safari video controls and play button */
 video::-webkit-media-controls {
   display: none !important;
 }
@@ -213,11 +206,17 @@ video::-webkit-media-controls-panel {
   display: none !important;
 }
 
+video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+}
+
 video::-webkit-media-controls-start-playback-button {
   display: none !important;
 }
 
-/* Prevent any interaction overlay */
-video::before {
-  display: none !important;
+/* Prevent any tap highlighting on video */
+video {
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: none;
+  /* This prevents the play button from appearing on tap */
 }
