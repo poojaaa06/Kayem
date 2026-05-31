@@ -5,91 +5,74 @@ import { motion } from "framer-motion";
 const headline = ["Essence", "of", "Beautiful", "Fabric"];
 
 export default function SequenceCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const rafRef = useRef<number>(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    const video = document.createElement("video");
-    videoRef.current = video;
-
-    video.src = "/images/3dtransform-compressed.mp4";
-    video.muted = true;
-    video.loop = true;
-    video.playsInline = true;
-    video.setAttribute("playsinline", "true");
-    video.setAttribute("webkit-playsinline", "true");
-    video.preload = "metadata";
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const drawFrame = () => {
-      if (video.readyState >= 2) {
-        const { videoWidth, videoHeight } = video;
-        const canvasW = canvas.width;
-        const canvasH = canvas.height;
-
-        // Cover logic — same as object-cover
-        const scale = Math.max(canvasW / videoWidth, canvasH / videoHeight);
-        const drawW = videoWidth * scale;
-        const drawH = videoHeight * scale;
-        const offsetX = (canvasW - drawW) / 2;
-        const offsetY = (canvasH - drawH) / 2;
-
-        ctx.drawImage(video, offsetX, offsetY, drawW, drawH);
+    // Attempt to play video as soon as possible
+    const playVideo = async () => {
+      if (videoRef.current && !isPlaying) {
+        try {
+          await videoRef.current.play();
+          setIsPlaying(true);
+        } catch (err) {
+          console.log("Autoplay prevented:", err);
+          // iOS requires user interaction
+        }
       }
-      rafRef.current = requestAnimationFrame(drawFrame);
     };
 
-    const handleCanPlay = () => {
-      video.play().then(() => {
-        setVideoLoaded(true);
-        drawFrame();
-      }).catch(() => { });
+    playVideo();
+  }, [isPlaying]);
+
+  // Handle visibility change (when tab becomes active again)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && videoRef.current && !isPlaying) {
+        videoRef.current.play().catch(e => console.log("Play failed:", e));
+      }
     };
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-    video.addEventListener("canplay", handleCanPlay, { once: true });
-    video.load();
-
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
-      cancelAnimationFrame(rafRef.current);
-      window.removeEventListener("resize", resizeCanvas);
-      video.pause();
-      video.src = "";
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [isPlaying]);
 
   return (
     <div id="process" className="relative w-full h-screen">
-      {/* Background */}
+      {/* Background Video */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
-
-        {/* Poster image — fades out once canvas is drawing */}
+        {/* Show poster while video loads */}
         <img
           src="/images/3dtransform-poster.jpg"
-          alt=""
-          fetchPriority="high"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
+          alt="Background"
+          className={`absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2 transition-opacity duration-700 ${videoLoaded ? "opacity-0" : "opacity-100"
             }`}
         />
 
-        {/* Canvas — iOS never shows play button over this */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full"
-        />
+        <video
+          ref={videoRef}
+          poster="/images/3dtransform-poster.jpg"
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          onLoadedData={() => setVideoLoaded(true)}
+          onCanPlayThrough={() => {
+            // Video is fully buffered
+            if (videoRef.current) {
+              videoRef.current.play().catch(e => console.log("Play failed:", e));
+            }
+          }}
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2"
+        >
+          <source src="/images/3dtransform-compressed.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
 
+        {/* Overlay for better text readability */}
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
@@ -102,11 +85,13 @@ export default function SequenceCanvas() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2, duration: 1 }}
+              transition={{ delay: 0.8, duration: 1 }}
               className="mb-4 sm:mb-5 flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs uppercase tracking-luxury font-bold"
             >
               <span className="h-px w-6 sm:w-10 bg-luxury-gold/60" />
-              <span className="text-[#7A5C1E] dark:text-luxury-gold">Since 1985</span>
+              <span className="text-[#7A5C1E] dark:text-luxury-gold">
+                Since 1985
+              </span>
               <span className="h-px w-6 sm:w-10 bg-luxury-gold/60" />
             </motion.div>
 
@@ -117,7 +102,7 @@ export default function SequenceCanvas() {
                     initial={{ y: "110%" }}
                     animate={{ y: 0 }}
                     transition={{
-                      delay: 0.6 + wi * 0.15,
+                      delay: 0.4 + wi * 0.12,
                       duration: 1.1,
                       ease: [0.2, 0.8, 0.2, 1],
                     }}
@@ -133,11 +118,10 @@ export default function SequenceCanvas() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.6, duration: 1 }}
+              transition={{ delay: 1.2, duration: 1 }}
               className="font-serif mt-4 sm:mt-5 max-w-md mx-auto text-[12px] sm:text-sm text-luxury-ivory leading-relaxed"
             >
-              Specializing in Fancy Yarns across various fibers, lustres, and combinations,
-              we create yarns that enhance the beauty, texture, feel, and elegance of fabrics
+              Specializing in Fancy Yarns across various fibers, lustres, and combinations, we create yarns that enhance the beauty, texture, feel, and elegance of fabrics
             </motion.p>
           </div>
         </div>
