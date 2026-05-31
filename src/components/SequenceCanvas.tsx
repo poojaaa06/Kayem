@@ -1,29 +1,68 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 const headline = ["Essence", "of", "Beautiful", "Fabric"];
 
 export default function SequenceCanvas() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // iOS Safari requires a user gesture OR this programmatic trigger
+    // Setting these attributes at runtime bypasses some autoplay blocks
+    video.muted = true;
+    video.playsInline = true;
+
+    const tryPlay = () => {
+      video.play().catch(() => { });
+    };
+
+    if (video.readyState >= 3) {
+      tryPlay();
+    } else {
+      video.addEventListener("canplay", tryPlay, { once: true });
+    }
+
+    return () => video.removeEventListener("canplay", tryPlay);
+  }, []);
 
   return (
     <div id="process" className="relative w-full h-screen">
-      {/* Background Video */}
+      {/* Background */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
+
+        {/* Poster shown instantly while video loads — prevents black flash */}
+        <img
+          src="/images/3dtransform_001.png"
+          alt=""
+          fetchPriority="high"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${videoLoaded ? "opacity-0 pointer-events-none" : "opacity-100"
+            }`}
+        />
+
         <video
           ref={videoRef}
           autoPlay
           loop
           muted
           playsInline
+          preload="metadata"       // Loads just enough to show first frame fast
+          poster="/images/3dtransform-poster.jpg"
+          onCanPlay={() => {
+            videoRef.current?.play().catch(() => { });
+          }}
+          onPlaying={() => setVideoLoaded(true)}  // Fade out poster only when actually playing
           className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2"
         >
+          {/* WebM loads ~60% faster than MP4 on supported browsers */}
+          <source src="/images/3dtransform.webm" type="video/webm" />
           <source src="/images/3dtransform.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
 
-        {/* Overlay for better text readability */}
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
@@ -40,11 +79,7 @@ export default function SequenceCanvas() {
               className="mb-4 sm:mb-5 flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs uppercase tracking-luxury font-bold"
             >
               <span className="h-px w-6 sm:w-10 bg-luxury-gold/60" />
-              <span
-                className="text-[#7A5C1E] dark:text-luxury-gold"
-              >
-                Since 1985
-              </span>
+              <span className="text-[#7A5C1E] dark:text-luxury-gold">Since 1985</span>
               <span className="h-px w-6 sm:w-10 bg-luxury-gold/60" />
             </motion.div>
 
@@ -74,7 +109,8 @@ export default function SequenceCanvas() {
               transition={{ delay: 1.6, duration: 1 }}
               className="font-serif mt-4 sm:mt-5 max-w-md mx-auto text-[12px] sm:text-sm text-luxury-ivory leading-relaxed"
             >
-              Specializing in Fancy Yarns across various fibers, lustres, and combinations, we create yarns that enhance the beauty, texture, feel, and elegance of fabrics
+              Specializing in Fancy Yarns across various fibers, lustres, and combinations,
+              we create yarns that enhance the beauty, texture, feel, and elegance of fabrics
             </motion.p>
           </div>
         </div>
