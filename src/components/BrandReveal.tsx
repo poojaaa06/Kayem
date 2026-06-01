@@ -6,13 +6,11 @@ import { motion, useScroll, useTransform } from "framer-motion";
 export default function BrandReveal() {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // Monitor Scroll Progress of this section
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
   });
 
-  // Map scroll progress to scale, letter spacing, and opacity
   const scale = useTransform(scrollYProgress, [0, 0.5, 0.9], [1.4, 1, 0.95]);
   const letterSpacing = useTransform(
     scrollYProgress,
@@ -20,12 +18,8 @@ export default function BrandReveal() {
     ["0.8em", "0.2em", "0.05em"]
   );
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 0.9], [0, 1, 1, 0]);
-
-  // Subtle subtitle animations
   const textY = useTransform(scrollYProgress, [0.3, 0.5, 0.8], [30, 0, -15]);
   const textOpacity = useTransform(scrollYProgress, [0.3, 0.45, 0.8], [0, 1, 0]);
-
-  // Glow animation for the background
   const glowOpacity = useTransform(scrollYProgress, [0.4, 0.6, 0.8], [0.3, 0.8, 0]);
 
   return (
@@ -33,13 +27,11 @@ export default function BrandReveal() {
       ref={containerRef}
       className="relative w-full h-[80vh] md:h-[75vh] bg-luxury-charcoal flex items-center justify-center overflow-hidden z-30"
     >
-      {/* Dynamic Gold lighting backdrop */}
       <motion.div
         style={{ opacity: glowOpacity }}
         className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.15)_0%,rgba(18,16,14,0)_70%)] pointer-events-none"
       />
 
-      {/* Ambient noise texture */}
       <div
         className="absolute inset-0 opacity-[0.02] pointer-events-none"
         style={{
@@ -48,23 +40,29 @@ export default function BrandReveal() {
         }}
       />
 
-      {/* Subtle gold lines - decorative */}
       <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-px h-20 bg-gradient-to-b from-transparent via-luxury-gold/30 to-transparent" />
       <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-px h-20 bg-gradient-to-t from-transparent via-luxury-gold/30 to-transparent" />
 
-      {/* Sticky Reveal Wrapper */}
       <div className="sticky top-0 w-full h-screen flex flex-col items-center justify-center px-4 sm:px-6">
 
-        {/* Animated Brand Typography */}
+        {/* Main Brand Text with Peginot Font */}
         <motion.div
-          style={{ scale, opacity, letterSpacing }}
-          className="relative font-serif text-5xl sm:text-7xl md:text-8xl lg:text-[140px] text-luxury-gold font-light tracking-widest text-center select-none z-20"
+          style={{
+            scale,
+            opacity,
+            letterSpacing,
+            fontFamily: "KayemFont, 'Fraunces', 'Cormorant Garamond', serif"
+          }}
+          className="relative text-5xl sm:text-7xl md:text-8xl lg:text-[140px] text-luxury-gold font-light tracking-widest text-center select-none z-20"
         >
           KAYEM
 
-          {/* Subtle text shadow for depth */}
+          {/* Shadow/Glow Layer */}
           <motion.div
-            style={{ opacity: useTransform(scrollYProgress, [0.4, 0.6], [0, 0.5]) }}
+            style={{
+              opacity: useTransform(scrollYProgress, [0.4, 0.6], [0, 0.5]),
+              fontFamily: "KayemFont, 'Fraunces', 'Cormorant Garamond', serif"
+            }}
             className="absolute inset-0 text-luxury-gold/30 blur-lg -z-10"
             aria-hidden="true"
           >
@@ -81,7 +79,7 @@ export default function BrandReveal() {
           className="h-px bg-gradient-to-r from-transparent via-luxury-gold to-transparent mt-6 mb-4"
         />
 
-        {/* Animated Narrative Subtext */}
+        {/* Narrative Subtext */}
         <motion.div
           style={{ y: textY, opacity: textOpacity }}
           className="absolute bottom-[15%] md:bottom-[20%] text-center z-20 max-w-[90%] md:max-w-md px-4"
@@ -102,7 +100,7 @@ export default function BrandReveal() {
           </motion.div>
         </motion.div>
 
-        {/* Scroll hint - subtle indicator */}
+        {/* Scroll hint */}
         <motion.div
           style={{ opacity: useTransform(scrollYProgress, [0.1, 0.3, 0.6], [1, 0.5, 0]) }}
           className="absolute bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 z-20"

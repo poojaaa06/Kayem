@@ -21,9 +21,10 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
 
   const navLinks = [
     { name: "ABOUT US", href: "/about" },
-    { name: "BLOGS", href: "/blog" },
+
     { name: "PRODUCTS", href: "/products" },
-    { name: "CONTACT US", href: "#contact" },
+    { name: "LATEST UPDATES", href: "/blog" },
+    { name: "CONTACT US", href: "/contactus" },
   ];
 
   // Don't render animations until mounted to prevent layout shift
@@ -66,7 +67,7 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8 lg:gap-10 text-xs uppercase tracking-[0.25em] text-muted-foreground">
+          <nav className="hidden lg:flex items-center gap-8 lg:gap-10 text-xs uppercase tracking-[0.25em] text-muted-foreground font-serif">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -159,7 +160,7 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
                     </span>
                     <span className="h-px w-8 bg-[#D4AF37]/40" />
                   </div>
-                  <p className="text-xs text-white/40">Surat, India</p>
+
                 </motion.div>
               </div>
             </motion.div>

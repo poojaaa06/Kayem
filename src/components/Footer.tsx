@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { ArrowRight, X } from "lucide-react";
 
 export default function Footer() {
@@ -17,6 +17,11 @@ export default function Footer() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  useEffect(() => {
+    const handler = () => setIsModalOpen(true);
+    window.addEventListener("open-enquiry-modal", handler);
+    return () => window.removeEventListener("open-enquiry-modal", handler);
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -24,6 +29,7 @@ export default function Footer() {
       [e.target.name]: e.target.value
     });
   };
+
 
   const handleContactSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -188,11 +194,7 @@ export default function Footer() {
           {/* Footer Bottom Metadata & Large Watermark Logo */}
           <div className="pt-12 flex flex-col md:flex-row items-center justify-between text-[10px] tracking-luxury text-luxury-ivory/40 uppercase font-sans">
             <span>&copy; {new Date().getFullYear()} KAYEM SYNTHETICS. ALL RIGHTS RESERVED.</span>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-luxury-ivory transition-colors">PRIVACY POLICY</a>
-              <span>/</span>
-              <a href="#" className="hover:text-luxury-ivory transition-colors">TERMS OF SERVICE</a>
-            </div>
+
           </div>
 
           {/* Giant Watermark Background Wordmark */}

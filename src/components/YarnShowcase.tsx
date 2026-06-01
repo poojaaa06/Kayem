@@ -8,21 +8,21 @@ const yarns = [
     {
         img: "/images/NYLON.jpeg",
         name: "Nylon Yarn",
-        code: "NY—01",
+        code: "",
         desc: "Premium nylon air textured yarn with excellent coverage, bulk, and soft hand feel.",
         count: ""
     },
     {
         img: "/images/viscous.png",
         name: "Viscose Yarn",
-        code: "VS—03",
+        code: "",
         desc: "Luxurious viscose fancy yarns with exceptional drape, sheen, and natural comfort.",
         count: ""
     },
     {
         img: "/images/dopedyed.jpeg",
         name: "Polyester Yarn",
-        code: "PY—04",
+        code: "",
         desc: "Dope dyed polyester yarns with vibrant, long-lasting colorfastness and strength.",
         count: ""
     },
@@ -107,12 +107,7 @@ export function YarnShowcase() {
     return (
         <section id="collection" className="relative py-32 px-6 md:px-12 overflow-hidden">
             {/* Rich gradient background */}
-            <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/8 via-luxury-cream to-[#7A5C1E]/5" />
-                <div className="absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-[#D4AF37]/15 blur-3xl" />
-                <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-[#7A5C1E]/10 blur-3xl" />
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#D4AF37]/5 via-transparent to-transparent" />
-            </div>
+            <div className="absolute inset-0 bg-luxury-cream" />
 
             <div className="relative max-w-7xl mx-auto">
                 <motion.div

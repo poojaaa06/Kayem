@@ -1,10 +1,11 @@
 "use client";
 
-import { useRef, type ReactNode, type MouseEvent, useEffect, useState } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { useRef, type ReactNode, type MouseEvent, useEffect, useState, FormEvent } from "react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { ArrowRight, X } from "lucide-react";
 
 // MagneticButton Component (embedded)
 function MagneticButton({ children, className = "", variant = "primary", onClick }: {
@@ -50,6 +51,269 @@ function MagneticButton({ children, className = "", variant = "primary", onClick
         >
             <span className="relative z-10">{children}</span>
         </motion.button>
+    );
+}
+
+// Contact Modal Component - Same as Footer Form
+function ContactModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+    const ACCESS_KEY = "d41237a7-74d8-484e-be57-97c81194f8ae";
+    const [formData, setFormData] = useState({
+        name: "",
+        phone: "",
+        email: "",
+        officeName: "",
+        officeAddress: "",
+        requirement: "",
+        additionalMessage: ""
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleContactSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        try {
+            const formObject = {
+                access_key: ACCESS_KEY,
+                name: formData.name,
+                phone: formData.phone,
+                email: formData.email,
+                office_name: formData.officeName,
+                office_address: formData.officeAddress,
+                requirement: formData.requirement,
+                additional_message: formData.additionalMessage,
+                subject: "New Kayem Enquiry",
+            };
+
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify(formObject),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setSubmitSuccess(true);
+                setFormData({
+                    name: "",
+                    phone: "",
+                    email: "",
+                    officeName: "",
+                    officeAddress: "",
+                    requirement: "",
+                    additionalMessage: "",
+                });
+
+                setTimeout(() => {
+                    setSubmitSuccess(false);
+                    onClose();
+                }, 2000);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Failed to send enquiry.");
+        }
+
+        setIsSubmitting(false);
+    };
+
+    // Prevent body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
+
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    {/* Backdrop */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
+                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+                    />
+
+                    {/* Modal Container */}
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+                            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0d0b0a] border border-luxury-gold/20 rounded-2xl shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Modal Header */}
+                            <div className="sticky top-0 flex items-center justify-between p-6 border-b border-luxury-gold/20 bg-[#0d0b0a]">
+                                <div>
+                                    <h3 className="text-xl font-display text-luxury-ivory">Send an Enquiry</h3>
+                                    <p className="text-xs text-luxury-ivory/50 mt-1">Fill in the details below and we'll get back to you</p>
+                                </div>
+                                <button
+                                    onClick={onClose}
+                                    className="text-luxury-ivory/50 hover:text-luxury-gold transition-colors"
+                                >
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            {/* Modal Body - Form */}
+                            <form onSubmit={handleContactSubmit} className="p-6 space-y-5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
+                                            Full Name *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            required
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                            placeholder="Your full name"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
+                                            Phone Number *
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            name="phone"
+                                            required
+                                            value={formData.phone}
+                                            onChange={handleInputChange}
+                                            className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                            placeholder="Your phone number"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
+                                        Email Address *
+                                    </label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        required
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                        placeholder="your@email.com"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
+                                        Office / Company Name *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="officeName"
+                                        required
+                                        value={formData.officeName}
+                                        onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                        placeholder="Your company name"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
+                                        Office Address *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="officeAddress"
+                                        required
+                                        value={formData.officeAddress}
+                                        onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                        placeholder="Complete office address"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
+                                        Requirement / Product Interest *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="requirement"
+                                        required
+                                        value={formData.requirement}
+                                        onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                        placeholder="e.g., Nylon Yarns, Viscose Yarns, etc."
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
+                                        Additional Message
+                                    </label>
+                                    <textarea
+                                        name="additionalMessage"
+                                        rows={4}
+                                        value={formData.additionalMessage}
+                                        onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors resize-none"
+                                        placeholder="Tell us more about your requirements..."
+                                    />
+                                </div>
+
+                                {/* Submit Button */}
+                                <div className="pt-4">
+                                    <button
+                                        type="submit"
+                                        disabled={isSubmitting}
+                                        className="w-full py-3 bg-luxury-gold/20 border border-luxury-gold/40 rounded-full hover:bg-luxury-gold/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {isSubmitting ? (
+                                            <span className="text-sm uppercase tracking-luxury text-luxury-gold">
+                                                Sending...
+                                            </span>
+                                        ) : submitSuccess ? (
+                                            <span className="text-sm uppercase tracking-luxury text-green-500">
+                                                Sent Successfully!
+                                            </span>
+                                        ) : (
+                                            <span className="text-sm uppercase tracking-luxury text-luxury-gold">
+                                                Submit Enquiry
+                                            </span>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                </>
+            )}
+        </AnimatePresence>
     );
 }
 
@@ -111,6 +375,7 @@ function Section({
 export default function About() {
     const heroRef = useRef<HTMLDivElement>(null);
     const [isMobile, setIsMobile] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
     const imgY = useTransform(scrollYProgress, [0, 1], [0, isMobile ? 50 : 100]);
@@ -147,7 +412,6 @@ export default function About() {
                         />
                     </motion.div>
 
-                    {/* Rich multi-layered gradients */}
                     <div className="absolute inset-0">
                         <div className="absolute inset-0 bg-gradient-to-b from-luxury-cream/90 via-luxury-cream/50 to-luxury-cream" />
                         {!isMobile && (
@@ -165,7 +429,7 @@ export default function About() {
                             transition={{ delay: 0.6, duration: 1 }}
                             className="mb-6 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]"
                         >
-                            — Since 1985 · Surat, India
+                            — Since 1985
                         </motion.p>
                         <h1 className="max-w-5xl font-display text-[12vw] font-light leading-[0.9] md:text-[8vw]">
                             {["The", "house", "behind", "the", "thread."].map((w, i) => (
@@ -194,7 +458,6 @@ export default function About() {
 
                 {/* STORY SECTION */}
                 <section className="relative mx-auto max-w-7xl px-6 py-32 md:px-16">
-                    {/* Subtle background glow */}
                     {!isMobile && (
                         <div className="absolute inset-0 -z-10">
                             <div className="absolute top-1/2 left-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D4AF37]/8 blur-3xl" />
@@ -273,7 +536,6 @@ export default function About() {
 
                 {/* VISIONARY TEAM SECTION */}
                 <section className="relative border-t border-[#7A5C1E]/20 bg-gradient-to-br from-luxury-ivory via-[#F5E6D3]/30 to-luxury-ivory px-6 py-32 md:px-16">
-                    {/* Decorative background elements */}
                     {!isMobile && (
                         <div className="absolute inset-0">
                             <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-[#D4AF37]/10 blur-3xl" />
@@ -342,8 +604,8 @@ export default function About() {
                     </div>
                 </section>
 
-                {/* CTA SECTION */}
-                <section className="relative overflow-hidden px-6 py-32 text-center md:px-16">
+                {/* CONNECT WITH US SECTION */}
+                <section className="relative overflow-hidden px-6 py-32 md:px-16">
                     {!isMobile && (
                         <div className="absolute inset-0">
                             <div className="absolute inset-0 bg-gradient-to-t from-[#D4AF37]/15 via-transparent to-transparent" />
@@ -352,26 +614,46 @@ export default function About() {
                         </div>
                     )}
 
-                    <div className="relative mx-auto max-w-3xl">
-                        <motion.h3
+                    <div className="relative mx-auto max-w-3xl text-center">
+                        <motion.div
                             initial={{ opacity: 0, y: 40 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 1 }}
-                            className="font-display text-4xl font-light leading-[1.05] text-luxury-charcoal md:text-6xl"
                         >
-                            Begin a <span className="italic text-[#7A5C1E]">conversation</span> in yarn.
-                        </motion.h3>
-                        <p className="mt-6 font-serif text-lg text-luxury-charcoal/80">
-                            From sampling to scaled production — we build yarn programs alongside the houses we serve.
-                        </p>
-                        <div className="mt-10 flex justify-center">
-                            <MagneticButton>Talk to the atelier</MagneticButton>
-                        </div>
+                            <p className="mb-5 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]">
+                                — Connect With Us
+                            </p>
+                            <h3 className="font-display text-4xl font-light leading-[1.05] text-luxury-charcoal md:text-6xl">
+                                Let's weave your <span className="italic text-[#7A5C1E]">next chapter.</span>
+                            </h3>
+                            <div className="mx-auto my-8 h-px w-16 bg-[#7A5C1E]/30" />
+                            <p className="mx-auto max-w-md font-serif text-base leading-relaxed text-luxury-charcoal/70">
+                                Have a project in mind? Looking for custom yarn solutions?<br />
+                                We'd love to hear from you.
+                            </p>
+                            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                                <MagneticButton onClick={() => setIsModalOpen(true)}>
+                                    Send an inquiry
+                                </MagneticButton>
+                                <a
+                                    href="mailto:info@kayem.in"
+                                    className="group flex items-center gap-2 rounded-full border border-[#7A5C1E]/30 px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-luxury-charcoal transition-all hover:border-[#7A5C1E] hover:bg-[#7A5C1E]/5"
+                                >
+                                    <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                    info@kayem.in
+                                </a>
+                            </div>
+                        </motion.div>
                     </div>
                 </section>
             </main>
             <Footer />
+
+            {/* Contact Modal - Same as Footer Form */}
+            <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </>
     );
 }

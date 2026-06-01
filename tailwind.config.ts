@@ -12,17 +12,18 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         luxury: {
-          gold: "#dfcfb7",       // Champagne Gold
-          ivory: "#faf6f0",      // Warm Ivory
-          accent: "#c5a880",     // Antique Gold
-          charcoal: "#12100e",   // Black Coffee / Warm Charcoal
-          sand: "#d4c3a3",       // Deep Sand
-          cream: "#f7f1e5",      // Rich Cream
+          gold: "#dfcfb7",
+          ivory: "#faf6f0",
+          accent: "#c5a880",
+          charcoal: "#12100e",
+          sand: "#d4c3a3",
+          cream: "#f7f1e5",
         }
       },
       fontFamily: {
         serif: ["var(--font-cormorant)", "serif"],
         sans: ["var(--font-inter)", "sans-serif"],
+        kayem: ["var(--font-kayem)", "KayemFont", "serif"], // Use CSS variable
       },
       letterSpacing: {
         luxury: "0.2em",
@@ -52,4 +53,5 @@ const config: Config = {
   },
   plugins: [],
 };
+
 export default config;

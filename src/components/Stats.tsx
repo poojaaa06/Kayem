@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 const stats = [
     { v: 40, suffix: "+", label: "Years of expertise" },
     { v: 150, suffix: "+", label: "Products Variants" },
-    { v: 400, suffix: "+", label: "Monthly Production (MT)" },
+
     { v: 400, suffix: "+", label: "Trusted Weavers" },
 ];
 
@@ -56,7 +56,7 @@ export function Stats() {
             <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#7A5C1E]/30 to-transparent" />
 
             <div className="relative max-w-7xl mx-auto">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
                     {stats.map((s, i) => (
                         <motion.div
                             key={i}

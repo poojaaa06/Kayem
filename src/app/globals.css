@@ -1,8 +1,15 @@
+/* Remove duplicate @font-face - keep only ONE at the top */
+@font-face {
+  font-family: "KayemFont";
+  src: url("/fonts/peginot.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-
 
 @custom-variant dark (&:is(.dark *));
 
@@ -10,6 +17,8 @@
   --font-display: "Fraunces", "Cormorant Garamond", serif;
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+  /* Add KayemFont to theme */
+  --font-kayem: "KayemFont", "Fraunces", serif;
 
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -44,9 +53,7 @@
 
 :root {
   --background: #faf6f0;
-  /* Warm Ivory */
   --foreground: #12100e;
-  /* Warm Charcoal */
   --card: oklch(0.16 0.006 60);
   --card-foreground: oklch(0.96 0.01 80);
   --popover: oklch(0.14 0.006 60);
@@ -68,7 +75,6 @@
   --gold-soft: #c5a880;
   --graphite: #2a2826;
   --onyx: #1a1816;
-
   --gradient-metal: linear-gradient(135deg, #dfcfb7 0%, #c5a880 45%, #f7f1e5 100%);
   --gradient-radial-glow: radial-gradient(ellipse at center, rgba(223, 207, 183, 0.18) 0%, transparent 65%);
   --gradient-noir: linear-gradient(180deg, #1a1816 0%, #2a2826 100%);
@@ -126,6 +132,11 @@ body {
     letter-spacing: -0.03em;
   }
 
+  /* Add font-kayem utility */
+  .font-kayem {
+    font-family: var(--font-kayem);
+  }
+
   .text-gradient-gold {
     background: var(--gradient-metal);
     -webkit-background-clip: text;
@@ -160,7 +171,6 @@ body {
     box-shadow: var(--shadow-glow);
   }
 
-  /* Smooth hide scrollbar helper */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -170,7 +180,6 @@ body {
     scrollbar-width: none;
   }
 
-  /* Custom text tracking */
   .editorial-heading {
     font-family: var(--font-display);
     font-weight: 300;
@@ -214,9 +223,7 @@ video::-webkit-media-controls-start-playback-button {
   display: none !important;
 }
 
-/* Prevent any tap highlighting on video */
 video {
   -webkit-tap-highlight-color: transparent;
   pointer-events: none;
-  /* This prevents the play button from appearing on tap */
 }

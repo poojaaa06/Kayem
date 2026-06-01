@@ -134,8 +134,8 @@ export default function FabricShowcase() {
               THE CATALOGUE
             </p>
             <h2 className="font-display text-5xl md:text-7xl font-light leading-[0.95] text-luxury-charcoal">
-              Luxury Weaves.<br />
-              <span className="italic text-luxury-gold">Created from our finest yarns</span>
+              Luxury Yarns.<br />
+              <span className="italic text-luxury-gold">Crafted with precision </span>
             </h2>
           </div>
           <p className="max-w-md text-luxury-charcoal/60 leading-relaxed font-serif text-md">

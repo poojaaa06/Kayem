@@ -34,21 +34,10 @@ export default function SequenceCanvas() {
     document.addEventListener("click", handleInteraction);
 
     // Intersection Observer to play when video comes into view
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            video.play().catch(e => console.log("Play on view:", e));
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
 
-    observer.observe(video);
 
     return () => {
-      observer.disconnect();
+
       document.removeEventListener("touchstart", handleInteraction);
       document.removeEventListener("click", handleInteraction);
     };
@@ -60,7 +49,7 @@ export default function SequenceCanvas() {
       <div className="absolute inset-0 w-full h-full overflow-hidden">
         {/* Show poster while video loads */}
         <img
-          src="/images/3dtransform-poster.jpg"
+          src="/images/herom-poster.jpg"
           alt="Background"
           fetchPriority="high"
           className={`absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2 transition-opacity duration-700 ${videoLoaded ? "opacity-0" : "opacity-100"
@@ -69,15 +58,21 @@ export default function SequenceCanvas() {
 
         <video
           ref={videoRef}
-          loop
+          autoPlay
           muted
           playsInline
+          loop
           preload="auto"
-          poster="/images/3dtransform-poster.jpg"
-          onLoadedData={() => setVideoLoaded(true)}
+          poster="/images/herom-poster.jpg"
           className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2"
+          onLoadedMetadata={() => {
+            videoRef.current?.play().catch(() => { });
+          }}
+          onCanPlay={() => {
+            setVideoLoaded(true);
+          }}
         >
-          <source src="/images/3dtransform-compressed.mp4" type="video/mp4" />
+          <source src="/images/hero_video.mp4" type="video/mp4" />
         </video>
 
         {/* Overlay for better text readability */}

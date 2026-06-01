@@ -1,11 +1,12 @@
 "use client";
 
-import { useRef, type ReactNode, type MouseEvent, useState } from "react";
-import { motion, useMotionValue, useSpring, useTransform, useScroll } from "framer-motion";
+import { useRef, type ReactNode, type MouseEvent, useState, useEffect, FormEvent } from "react";
+import { motion, useMotionValue, useSpring, useTransform, useScroll, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { X } from "lucide-react";
 
 // MagneticButton Component
 function MagneticButton({ children, className = "", variant = "primary", onClick }: {
@@ -51,6 +52,194 @@ function MagneticButton({ children, className = "", variant = "primary", onClick
         >
             <span className="relative z-10">{children}</span>
         </motion.button>
+    );
+}
+
+// ── Send Enquiry Modal (Same as Footer) ──────────────────────────────────────
+function EnquiryModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+    const ACCESS_KEY = "d41237a7-74d8-484e-be57-97c81194f8ae";
+    const [formData, setFormData] = useState({
+        name: "",
+        phone: "",
+        email: "",
+        officeName: "",
+        officeAddress: "",
+        requirement: "",
+        additionalMessage: ""
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        try {
+            const formObject = {
+                access_key: ACCESS_KEY,
+                name: formData.name,
+                phone: formData.phone,
+                email: formData.email,
+                office_name: formData.officeName,
+                office_address: formData.officeAddress,
+                requirement: formData.requirement,
+                additional_message: formData.additionalMessage,
+                subject: "New Kayem Enquiry - Blog Page",
+            };
+
+            const response = await fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify(formObject),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setSubmitSuccess(true);
+                setFormData({
+                    name: "",
+                    phone: "",
+                    email: "",
+                    officeName: "",
+                    officeAddress: "",
+                    requirement: "",
+                    additionalMessage: "",
+                });
+
+                setTimeout(() => {
+                    setSubmitSuccess(false);
+                    onClose();
+                }, 2000);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Failed to send enquiry.");
+        }
+
+        setIsSubmitting(false);
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
+
+    return (
+        <AnimatePresence>
+            {isOpen && (
+                <>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={onClose}
+                        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
+                    />
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            transition={{ duration: 0.3, ease: [0.2, 0.8, 0.2, 1] }}
+                            className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0d0b0a] border border-luxury-gold/20 rounded-2xl shadow-2xl"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="sticky top-0 flex items-center justify-between p-6 border-b border-luxury-gold/20 bg-[#0d0b0a]">
+                                <div>
+                                    <h3 className="text-xl font-display text-luxury-ivory">Send an Enquiry</h3>
+                                    <p className="text-xs text-luxury-ivory/50 mt-1">Fill in the details below and we'll get back to you</p>
+                                </div>
+                                <button onClick={onClose} className="text-luxury-ivory/50 hover:text-luxury-gold transition-colors">
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">Full Name *</label>
+                                        <input type="text" name="name" required value={formData.name} onChange={handleInputChange}
+                                            className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                            placeholder="Your full name" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">Phone Number *</label>
+                                        <input type="tel" name="phone" required value={formData.phone} onChange={handleInputChange}
+                                            className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                            placeholder="Your phone number" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">Email Address *</label>
+                                    <input type="email" name="email" required value={formData.email} onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                        placeholder="your@email.com" />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">Office / Company Name *</label>
+                                    <input type="text" name="officeName" required value={formData.officeName} onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                        placeholder="Your company name" />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">Office Address *</label>
+                                    <input type="text" name="officeAddress" required value={formData.officeAddress} onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                        placeholder="Complete office address" />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">Requirement / Product Interest *</label>
+                                    <input type="text" name="requirement" required value={formData.requirement} onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
+                                        placeholder="e.g., Nylon Yarns, Viscose Yarns, etc." />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">Additional Message</label>
+                                    <textarea name="additionalMessage" rows={4} value={formData.additionalMessage} onChange={handleInputChange}
+                                        className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors resize-none"
+                                        placeholder="Tell us more about your requirements..." />
+                                </div>
+
+                                <div className="pt-4">
+                                    <button type="submit" disabled={isSubmitting}
+                                        className="w-full py-3 bg-luxury-gold/20 border border-luxury-gold/40 rounded-full hover:bg-luxury-gold/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        {isSubmitting ? (
+                                            <span className="text-sm uppercase tracking-luxury text-luxury-gold">Sending...</span>
+                                        ) : submitSuccess ? (
+                                            <span className="text-sm uppercase tracking-luxury text-green-500">Sent Successfully!</span>
+                                        ) : (
+                                            <span className="text-sm uppercase tracking-luxury text-luxury-gold">Submit Enquiry</span>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                </>
+            )}
+        </AnimatePresence>
     );
 }
 
@@ -134,6 +323,8 @@ const categories = ["All", "Material Study", "Inside the Mill", "Craft", "Colour
 export default function Blog() {
     const heroRef = useRef<HTMLDivElement>(null);
     const [active, setActive] = useState("All");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
 
     const { scrollYProgress } = useScroll({
         target: heroRef,
@@ -142,6 +333,13 @@ export default function Blog() {
     const imgY = useTransform(scrollYProgress, [0, 1], [0, 200]);
     const imgScale = useTransform(scrollYProgress, [0, 1], [1.05, 1.2]);
 
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const filtered = active === "All" ? posts : posts.filter((p) => p.category === active);
 
     return (
@@ -149,9 +347,8 @@ export default function Blog() {
             <Navbar />
             <main className="relative min-h-screen bg-luxury-cream text-luxury-charcoal">
 
-                {/* ── HERO with parallax background image - MATCHING PRODUCTS PAGE STYLE ── */}
+                {/* ── HERO ── */}
                 <section ref={heroRef} className="relative min-h-[85vh] overflow-hidden pt-56 md:h-[90vh] md:pt-0">
-                    {/* Background image — replace with your blog-hero image */}
                     <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
                         <Image
                             src="/images/blog-hero.png"
@@ -162,7 +359,6 @@ export default function Blog() {
                         />
                     </motion.div>
 
-                    {/* Rich multi-layered gradients - matching Products page */}
                     <div className="absolute inset-0">
                         <div className="absolute inset-0 bg-gradient-to-b from-luxury-cream/90 via-luxury-cream/50 to-luxury-cream" />
                         <div className="absolute top-0 right-0 h-[500px] w-[500px] rounded-full bg-[#D4AF37]/20 blur-3xl" />
@@ -239,7 +435,7 @@ export default function Blog() {
                 </section>
 
                 {/* ── NEWSLETTER ── */}
-                <section className="relative mx-auto max-w-7xl px-6 pb-32 md:px-16">
+                {/* <section className="relative mx-auto max-w-7xl px-6 pb-32 md:px-16">
                     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#D4AF37]/10 via-[#7A5C1E]/5 to-luxury-ivory p-12 text-center shadow-xl md:p-20">
                         <div className="absolute -top-32 left-1/2 h-64 w-[80%] -translate-x-1/2 rounded-full bg-[#D4AF37]/20 blur-3xl" />
                         <div className="relative">
@@ -268,10 +464,57 @@ export default function Blog() {
                             </form>
                         </div>
                     </div>
+                </section> */}
+
+                {/* ── CONNECT WITH US SECTION ── */}
+                <section className="relative overflow-hidden px-6 py-32 md:px-16">
+                    {!isMobile && (
+                        <div className="absolute inset-0">
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#D4AF37]/15 via-transparent to-transparent" />
+                            <div className="absolute bottom-0 left-1/2 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-[#7A5C1E]/15 blur-3xl" />
+                            <div className="absolute top-0 left-1/2 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-[#D4AF37]/10 blur-3xl" />
+                        </div>
+                    )}
+
+                    <div className="relative mx-auto max-w-3xl text-center">
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1 }}
+                        >
+                            <p className="mb-5 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]">
+                                — Connect With Us
+                            </p>
+                            <h3 className="font-display text-4xl font-light leading-[1.05] text-luxury-charcoal md:text-6xl">
+                                Let's weave your <span className="italic text-[#7A5C1E]">next chapter.</span>
+                            </h3>
+                            <div className="mx-auto my-8 h-px w-16 bg-[#7A5C1E]/30" />
+                            <p className="mx-auto max-w-md font-serif text-base leading-relaxed text-luxury-charcoal/70">
+                                Have a project in mind? Looking for custom yarn solutions?<br />
+                                We'd love to hear from you.
+                            </p>
+                            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+                                <MagneticButton onClick={() => setIsModalOpen(true)}>
+                                    Send an inquiry
+                                </MagneticButton>
+                                <a
+                                    href="mailto:info@kayem.in"
+                                    className="group flex items-center gap-2 rounded-full border border-[#7A5C1E]/30 px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-luxury-charcoal transition-all hover:border-[#7A5C1E] hover:bg-[#7A5C1E]/5"
+                                >
+                                    <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                    info@kayem.in
+                                </a>
+                            </div>
+                        </motion.div>
+                    </div>
                 </section>
 
-                <Footer />
             </main>
+            <Footer />
+            <EnquiryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </>
     );
 }
@@ -310,7 +553,6 @@ function FeaturedCard({ post }: { post: Post }) {
                 onMouseLeave={onLeave}
                 className="group relative grid grid-cols-1 gap-10 overflow-hidden rounded-3xl bg-white/50 p-6 shadow-xl backdrop-blur-sm lg:grid-cols-12 lg:gap-16 md:p-10"
             >
-                {/* Image */}
                 <div className="relative aspect-[16/10] overflow-hidden rounded-2xl lg:col-span-7">
                     <motion.div style={{ x: tx, y: ty, scale: 1.1 }} className="relative h-full w-full">
                         <Image src={post.img} alt={post.title} fill className="object-cover" />
@@ -321,7 +563,6 @@ function FeaturedCard({ post }: { post: Post }) {
                     </div>
                 </div>
 
-                {/* Content */}
                 <div className="flex flex-col gap-6 lg:col-span-5">
                     <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]">
                         <span className="h-px w-8 bg-[#7A5C1E]/50" />
