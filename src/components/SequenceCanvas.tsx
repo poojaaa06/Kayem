@@ -8,40 +8,40 @@ export default function SequenceCanvas() {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+  // useEffect(() => {
+  //   const video = videoRef.current;
+  //   if (!video) return;
 
-    // Force play the video
-    const forcePlay = () => {
-      video.play().catch(e => {
-        console.log("Play failed:", e);
-        // Safari requires user interaction
-      });
-    };
+  //   // Force play the video
+  //   const forcePlay = () => {
+  //     video.play().catch(e => {
+  //       console.log("Play failed:", e);
+  //       // Safari requires user interaction
+  //     });
+  //   };
 
-    // Try to play immediately
-    forcePlay();
+  //   // Try to play immediately
+  //   forcePlay();
 
-    // Also try on any user interaction (Safari workaround)
-    const handleInteraction = () => {
-      forcePlay();
-      document.removeEventListener("touchstart", handleInteraction);
-      document.removeEventListener("click", handleInteraction);
-    };
+  //   // Also try on any user interaction (Safari workaround)
+  //   const handleInteraction = () => {
+  //     forcePlay();
+  //     document.removeEventListener("touchstart", handleInteraction);
+  //     document.removeEventListener("click", handleInteraction);
+  //   };
 
-    document.addEventListener("touchstart", handleInteraction);
-    document.addEventListener("click", handleInteraction);
+  //   document.addEventListener("touchstart", handleInteraction);
+  //   document.addEventListener("click", handleInteraction);
 
-    // Intersection Observer to play when video comes into view
+  //   // Intersection Observer to play when video comes into view
 
 
-    return () => {
+  //   return () => {
 
-      document.removeEventListener("touchstart", handleInteraction);
-      document.removeEventListener("click", handleInteraction);
-    };
-  }, []);
+  //     document.removeEventListener("touchstart", handleInteraction);
+  //     document.removeEventListener("click", handleInteraction);
+  //   };
+  // }, []);
 
   return (
     <div id="process" className="relative w-full h-screen">
@@ -62,15 +62,10 @@ export default function SequenceCanvas() {
           muted
           playsInline
           loop
-          preload="auto"
+          preload="metadata"
           poster="/images/herom-poster.jpg"
           className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2"
-          onLoadedMetadata={() => {
-            videoRef.current?.play().catch(() => { });
-          }}
-          onCanPlay={() => {
-            setVideoLoaded(true);
-          }}
+          onCanPlay={() => setVideoLoaded(true)}
         >
           <source src="/images/hero_video.mp4" type="video/mp4" />
         </video>
