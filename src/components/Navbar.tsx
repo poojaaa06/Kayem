@@ -8,44 +8,57 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  // const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+
+    // const checkMobile = () => {
+    //   setIsMobile(window.innerWidth < 1024);
+    // };
+
+    // checkMobile();
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    handleScroll(); // Check initial scroll position
+
+    handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    // window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      // window.removeEventListener("resize", checkMobile);
+    };
   }, []);
 
   const navLinks = [
     { name: "ABOUT US", href: "/about" },
-
     { name: "PRODUCTS", href: "/products" },
     { name: "LATEST UPDATES", href: "/blog" },
     { name: "CONTACT US", href: "/contactus" },
   ];
 
   // Don't render animations until mounted to prevent layout shift
-  if (!isMounted) {
-    return (
-      <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 h-16 md:h-20 flex items-center bg-transparent">
-        <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
-          <div className="z-20">
-            <a href="/" className="block">
-              <img
-                src="/images/l.png"
-                alt="Logo"
-                className="h-24 md:h-28 w-auto object-contain"
-                style={{ filter: "brightness(0) invert(1)" }}
-              />
-            </a>
-          </div>
-        </div>
-      </header>
-    );
-  }
+  // if (!isMounted) {
+  //   return (
+  //     <header className="fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-12 h-16 md:h-20 flex items-center bg-transparent">
+  //       <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
+  //         <div className="z-20">
+  //           <a href="/" className="block">
+  //             <img
+  //               src={isMobile ? "/images/l.png" : "/images/newlogo.png"}
+  //               alt="Logo"
+  //               className={isMobile ? "h-16 w-auto object-contain" : "h-24 md:h-28 w-auto object-contain"}
+  //               style={{ filter: "brightness(0) invert(1)" }}
+  //             />
+  //           </a>
+  //         </div>
+  //       </div>
+  //     </header>
+  //   );
+  // }
 
   return (
     <>
@@ -57,11 +70,30 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
           {/* Logo */}
           <div className="z-20">
             <a href="/" className="block">
+              {/* Mobile logo */}
               <img
                 src="/images/l.png"
                 alt="Logo"
-                className="h-24 md:h-28 w-auto object-contain"
-                style={{ filter: forceDarkLogo || isScrolled ? "brightness(0) invert(1)" : "brightness(0) invert(0)" }}
+                className="h-24 w-auto object-contain lg:hidden"
+                style={{
+                  filter:
+                    forceDarkLogo || isScrolled
+                      ? "brightness(0) invert(1)"
+                      : "brightness(0) invert(0)",
+                }}
+              />
+
+              {/* Desktop logo */}
+              <img
+                src="/images/newlogo.png"
+                alt="Logo"
+                className="hidden lg:block h-12 md:h-14 w-auto object-contain"
+                style={{
+                  filter:
+                    forceDarkLogo || isScrolled
+                      ? "brightness(0) invert(1)"
+                      : "brightness(0) invert(0)",
+                }}
               />
             </a>
           </div>
@@ -160,7 +192,6 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
                     </span>
                     <span className="h-px w-8 bg-[#D4AF37]/40" />
                   </div>
-
                 </motion.div>
               </div>
             </motion.div>

@@ -92,7 +92,7 @@ export default function SequenceCanvas() {
               className="mb-4 sm:mb-5 flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs uppercase tracking-luxury font-bold"
             >
               <span className="h-px w-6 sm:w-10 bg-luxury-gold/60" />
-              <span className="text-[#7A5C1E] dark:text-luxury-gold">
+              <span className="text-white">
                 Since 1985
               </span>
               <span className="h-px w-6 sm:w-10 bg-luxury-gold/60" />

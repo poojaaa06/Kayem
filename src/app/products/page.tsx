@@ -244,7 +244,7 @@ function ExpandableCategory({ index, title, items }: {
                     </span>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                    <span className="hidden sm:block text-[10px] sm:text-[11px] font-medium text-[#7A5C1E]/70 bg-[#7A5C1E]/8 px-2.5 py-1.5 rounded-full">
+                    <span className="hidden sm:block text-[16px] sm:text-[16px] font-medium text-[#7A5C1E]/70 bg-[#7A5C1E]/8 px-2.5 py-1.5 rounded-full">
                         {items.length} variants
                     </span>
                     <span className="sm:hidden text-[10px] font-medium text-[#7A5C1E]/60 bg-[#7A5C1E]/8 px-2 py-1 rounded-full">
@@ -468,10 +468,7 @@ export default function Products() {
                                         className="object-cover transition-transform duration-[1500ms] ease-out group-hover:scale-110"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#1A1612]/50 via-transparent to-transparent" />
-                                    <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
-                                        <span className="font-sans text-[10px] font-semibold uppercase tracking-[0.3em] text-[#C9A84C]/90">Series {fi === 0 ? "N" : fi === 1 ? "V" : "K"}</span>
-                                        <span className="font-mono text-xs text-white/50">0{fi + 1}/0{families.length}</span>
-                                    </div>
+
                                 </div>
 
                                 <div className="md:col-span-8">

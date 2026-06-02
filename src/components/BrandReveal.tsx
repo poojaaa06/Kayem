@@ -88,7 +88,7 @@ export default function BrandReveal() {
             ESTABLISHED 1985
           </span>
           <p className="font-serif text-sm md:text-base lg:text-lg italic text-luxury-ivory/90 font-light leading-relaxed">
-            &ldquo;We do not weave fabric. We spin structural light and tactile time.&rdquo;
+            &ldquo;Four Decades of Excellence in Specialty Yarn Manufacturing&rdquo;
           </p>
 
           {/* Small gold dot decoration */}
