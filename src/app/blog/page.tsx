@@ -498,15 +498,7 @@ export default function Blog() {
                                 <MagneticButton onClick={() => setIsModalOpen(true)}>
                                     Send an inquiry
                                 </MagneticButton>
-                                <a
-                                    href="mailto:info@kayem.in"
-                                    className="group flex items-center gap-2 rounded-full border border-[#7A5C1E]/30 px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-luxury-charcoal transition-all hover:border-[#7A5C1E] hover:bg-[#7A5C1E]/5"
-                                >
-                                    <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                    info@kayem.in
-                                </a>
+
                             </div>
                         </motion.div>
                     </div>

@@ -37,18 +37,7 @@ const FABRICS: Fabric[] = [
     loom: "Precision Shuttle Loom",
     pattern: "Sheer Plain Weave",
     description: "Ultra-lightweight, crisp, and translucent. The Lumière Organza possesses a natural structural stiffness that holds shape, reflecting a soft pearlescent glow while remaining completely weightless.",
-  },
-  {
-    id: "cashmere",
-    name: "Premium Twill Cashmere",
-    type: "Beam",
-    imageSrc: "/images/raw_cashmere.png",
-    density: "310 g/m²",
-    composition: "100% Pure Mongolian Cashmere",
-    loom: "Traditional Under-tension Loom",
-    pattern: "Fine Micro-twill Structure",
-    description: "Spun from combed undercoat fibers. The Zephyr Cashmere features a subtle, diagonal twill texture that yields an exceptionally soft loftiness, providing thermal efficiency with an organic matte finish.",
-  },
+  }
 ];
 
 export default function FabricShowcase() {
@@ -153,8 +142,8 @@ export default function FabricShowcase() {
               <button
                 key={fabric.id}
                 onClick={() => setSelectedId(fabric.id)}
-                className={`text-left p-6 rounded-2xl border transition-all duration-500 focus:outline-none ${selectedId === fabric.id
-                  ? "bg-luxury-ivory border-luxury-gold/30 shadow-xl"
+                className={`text-left p-6 rounded-2xl border border-luxury-ivory transition-all duration-500 focus:outline-none ${selectedId === fabric.id
+                  ? "bg-luxury-ivory border-luxury-gold shadow-xl"
                   : "bg-transparent border-transparent hover:border-luxury-gold/20"
                   }`}
               >

@@ -382,9 +382,9 @@ const families = [
 const applications = [
     { index: "01", title: "Sarees", tag: "Drape & lustre", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80", alt: "Vibrant saree" },
     { index: "02", title: "Dress Materials", tag: "Texture & flow", image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=600&q=80", alt: "Dress fabric" },
-    { index: "03", title: "Curtains", tag: "Weight & fall", image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80", alt: "Curtains" },
+    { index: "03", title: "Curtains", tag: "Weight & fall", image: "/images/curtain.jpg", alt: "Curtains" },
     { index: "04", title: "Upholstery", tag: "Strength & finish", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80", alt: "Sofa" },
-    { index: "05", title: "Carpets", tag: "Pile & resilience", image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80", alt: "Carpet" },
+    { index: "05", title: "Carpets", tag: "Pile & resilience", image: "/images/carpet.jpg", alt: "Carpet" },
 ];
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -523,7 +523,7 @@ export default function Products() {
                         >
                             <p className="mb-3 font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#7A5C1E]">— Applications</p>
                             <h3 className="max-w-3xl font-display text-3xl sm:text-4xl md:text-6xl font-light leading-[1.05] text-luxury-charcoal">
-                                Woven into <span className="italic text-[#7A5C1E]">every</span> corner of the home & wardrobe.
+                                Crafted for <span className="italic text-[#7A5C1E]">versatile</span> applications.
                             </h3>
                         </motion.div>
 
@@ -583,15 +583,7 @@ export default function Products() {
                                 <MagneticButton onClick={() => setIsModalOpen(true)}>
                                     Send an inquiry
                                 </MagneticButton>
-                                <a
-                                    href="mailto:info@kayem.in"
-                                    className="group flex items-center gap-2 rounded-full border border-[#7A5C1E]/30 px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-luxury-charcoal transition-all hover:border-[#7A5C1E] hover:bg-[#7A5C1E]/5"
-                                >
-                                    <svg className="h-4 w-4 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                    info@kayem.in
-                                </a>
+
                             </div>
                         </motion.div>
                     </div>

@@ -122,9 +122,9 @@ export function ProcessPin() {
                                             className="object-cover"
                                             sizes="260px"
                                         />
-                                        {/* Content at bottom with semi-transparent background */}
-                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#F5F0E8]/95 to-[#F5F0E8]/70 p-4">
-                                            <div className="inline-flex items-center gap-2 mb-2">
+                                        {/* Content at bottom - reduced height overlay */}
+                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#F5F0E8]/95 to-[#F5F0E8]/70 pt-3 pb-3 px-4">
+                                            <div className="inline-flex items-center gap-2 mb-1">
                                                 <span className="text-[#7A5C1E] font-mono text-[10px] tracking-wider">
                                                     {w.n}
                                                 </span>
@@ -133,10 +133,10 @@ export function ProcessPin() {
                                                     {w.tag}
                                                 </span>
                                             </div>
-                                            <h3 className="font-display text-xl font-light text-luxury-charcoal leading-tight mb-2">
+                                            <h3 className="font-display text-xl font-light text-luxury-charcoal leading-tight">
                                                 {w.label}
                                             </h3>
-                                            <p className="text-luxury-charcoal/70 text-[10px] leading-relaxed font-serif line-clamp-3">
+                                            <p className="text-luxury-charcoal/70 text-[10px] leading-relaxed font-serif line-clamp-2 mt-1">
                                                 {w.desc}
                                             </p>
                                         </div>
@@ -175,11 +175,10 @@ export function ProcessPin() {
                                                 }`}
                                             sizes="(max-width: 768px) 100vw, 50vw"
                                         />
-                                        {/* No gradient overlay - clean image */}
 
-                                        {/* Content at bottom with semi-transparent background */}
-                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#F5F0E8]/90 to-[#F5F0E8]/60 p-6 md:p-8">
-                                            <div className={`inline-flex items-center gap-2 mb-2 sm:mb-3 transition-all duration-300 ${isActive ? "opacity-100" : "opacity-60"
+                                        {/* Content at bottom - reduced height and padding */}
+                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#F5F0E8]/90 to-[#F5F0E8]/60 pt-4 pb-4 px-6 md:px-8">
+                                            <div className={`inline-flex items-center gap-2 mb-1 sm:mb-2 transition-all duration-300 ${isActive ? "opacity-100" : "opacity-60"
                                                 }`}>
                                                 <span className="text-[#7A5C1E] font-mono text-xs tracking-wider">
                                                     {w.n}
@@ -190,16 +189,16 @@ export function ProcessPin() {
                                                 </span>
                                             </div>
 
-                                            <h3 className={`font-display text-3xl md:text-4xl lg:text-5xl font-light text-luxury-charcoal leading-none mb-2 sm:mb-3 transition-all duration-300 ${isActive ? "tracking-normal" : "tracking-tight"
+                                            <h3 className={`font-display text-2xl md:text-3xl lg:text-4xl font-light text-luxury-charcoal leading-none transition-all duration-300 ${isActive ? "tracking-normal" : "tracking-tight"
                                                 }`}>
                                                 {w.label}
                                             </h3>
 
                                             <div className={`overflow-hidden transition-all duration-500 ${isActive
-                                                ? "max-h-40 opacity-100 mt-2 sm:mt-4"
+                                                ? "max-h-40 opacity-100 mt-2 sm:mt-3"
                                                 : "max-h-0 opacity-0"
                                                 }`}>
-                                                <p className="text-luxury-charcoal/70 text-sm md:text-base leading-relaxed font-serif">
+                                                <p className="text-luxury-charcoal/70 text-xs md:text-sm leading-relaxed font-serif">
                                                     {w.desc}
                                                 </p>
                                             </div>
@@ -217,67 +216,6 @@ export function ProcessPin() {
                     </div>
                 )}
 
-                {/* Active Section Details Panel - Desktop only */}
-                {!isMobile && (
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={active}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.5 }}
-                            className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-[#7A5C1E]/20"
-                        >
-                            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                                <div className="flex-1 text-center md:text-left">
-                                    <div className="flex items-center gap-3 justify-center md:justify-start mb-4">
-                                        <div className="w-6 sm:w-8 h-px bg-[#7A5C1E]/40" />
-                                        <span className="text-[#7A5C1E] text-xs uppercase tracking-wider font-mono">
-                                            Application Focus
-                                        </span>
-                                    </div>
-                                    <p className="text-luxury-charcoal/60 text-sm md:text-base max-w-2xl leading-relaxed font-serif">
-                                        {worlds[active].desc}
-                                    </p>
-                                </div>
-
-                                <div className="flex items-center gap-6 sm:gap-8">
-                                    <div className="text-center">
-                                        <div className="text-xl sm:text-2xl md:text-3xl font-display font-light text-[#7A5C1E]">
-                                            {worlds[active].n}
-                                        </div>
-                                        <div className="text-[9px] sm:text-[10px] uppercase tracking-wider text-luxury-charcoal/40 mt-1 font-mono">
-                                            Category
-                                        </div>
-                                    </div>
-                                    <div className="w-px h-6 sm:h-8 bg-[#7A5C1E]/20" />
-                                    <div className="text-center">
-                                        <div className="text-xl sm:text-2xl md:text-3xl font-display font-light text-[#7A5C1E]">
-                                            100+
-                                        </div>
-                                        <div className="text-[9px] sm:text-[10px] uppercase tracking-wider text-luxury-charcoal/40 mt-1 font-mono">
-                                            Variants
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </AnimatePresence>
-                )}
-
-                {/* Bottom Tagline */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={visible ? { opacity: 1 } : {}}
-                    transition={{ delay: 0.6, duration: 0.8 }}
-                    className="mt-12 sm:mt-16 md:mt-20 flex items-center justify-center gap-3 sm:gap-6"
-                >
-                    <span className="h-px flex-1 max-w-[40px] sm:max-w-[80px] bg-[#7A5C1E]/25" />
-                    <p className="font-serif italic text-xs sm:text-sm text-luxury-charcoal/40 text-center px-2">
-                        Sarees · Dress Materials · Curtains · Upholstery Fabrics
-                    </p>
-                    <span className="h-px flex-1 max-w-[40px] sm:max-w-[80px] bg-[#7A5C1E]/25" />
-                </motion.div>
             </div>
 
         </section>
