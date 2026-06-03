@@ -1,53 +1,13 @@
 "use client";
 
 import { useState, useRef, MouseEvent, TouchEvent, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-
-interface Fabric {
-  id: string;
-  name: string;
-  type: string;
-  imageSrc: string;
-  density: string;
-  composition: string;
-  loom: string;
-  pattern: string;
-  description: string;
-}
-
-const FABRICS: Fabric[] = [
-  {
-    id: "brocade",
-    name: "Aurelia Brocade",
-    type: "Item",
-    imageSrc: "/images/fabric_brocade.png",
-    density: "420 g/m²",
-    composition: "85% Mulberry Silk, 15% 24k Gold Thread",
-    loom: "Electronic Jacquard Loom",
-    pattern: "Aurelia Relief Brocade",
-    description: "An opulent, highly structured textile utilizing real gold wire. Designed to catch light dynamically, this double-faced brocade displays deep champagne topography, creating a stunning metallic sheen for evening wear.",
-  },
-  {
-    id: "organza",
-    name: "Lumière Organza",
-    type: "Base",
-    imageSrc: "/images/fabric_organza.png",
-    density: "45 g/m²",
-    composition: "100% Organically Spun Mulberry Silk",
-    loom: "Precision Shuttle Loom",
-    pattern: "Sheer Plain Weave",
-    description: "Ultra-lightweight, crisp, and translucent. The Lumière Organza possesses a natural structural stiffness that holds shape, reflecting a soft pearlescent glow while remaining completely weightless.",
-  }
-];
+import { motion } from "framer-motion";
 
 export default function FabricShowcase() {
-  const [selectedId, setSelectedId] = useState(FABRICS[0].id);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [isZoomActive, setIsZoomActive] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
-
-  const activeFabric = FABRICS.find((f) => f.id === selectedId) || FABRICS[0];
 
   // Detect mobile on client side only to avoid hydration mismatch
   useEffect(() => {
@@ -136,58 +96,35 @@ export default function FabricShowcase() {
 
         {/* Dynamic Display Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Panel: Selector List */}
+          {/* Left Panel: Two simple divs for Item and Base */}
           <div className="lg:col-span-4 flex flex-col space-y-6">
-            {FABRICS.map((fabric) => (
-              <button
-                key={fabric.id}
-                onClick={() => setSelectedId(fabric.id)}
-                className={`text-left p-6 rounded-2xl border border-luxury-ivory transition-all duration-500 focus:outline-none ${selectedId === fabric.id
-                  ? "bg-luxury-ivory border-luxury-gold shadow-xl"
-                  : "bg-transparent border-transparent hover:border-luxury-gold/20"
-                  }`}
-              >
-                <span className="text-[10px] tracking-[0.3em] text-[#7A5C1E] font-semibold block mb-2 uppercase">
-                  {fabric.type}
-                </span>
-                <span className="font-display text-xl md:text-2xl text-luxury-charcoal font-light block">
-                  {fabric.name}
-                </span>
-              </button>
-            ))}
+            {/* Item div */}
+            <div className="text-left p-6 rounded-2xl border border-luxury-gold/30 bg-white/50 backdrop-blur-sm">
+              <span className="text-[10px] tracking-[0.3em] text-[#7A5C1E] font-semibold block mb-2 uppercase">
+                Item
+              </span>
+              <span className="font-display text-xl md:text-2xl text-luxury-charcoal font-light block">
+                Aurelia Brocade
+              </span>
+            </div>
 
-            {/* Selected Fabric Narrative */}
+            {/* Base div */}
+            <div className="text-left p-6 rounded-2xl border border-luxury-gold/30 bg-white/50 backdrop-blur-sm">
+              <span className="text-[10px] tracking-[0.3em] text-[#7A5C1E] font-semibold block mb-2 uppercase">
+                Base
+              </span>
+              <span className="font-display text-xl md:text-2xl text-luxury-charcoal font-light block">
+                Lumiere Organza
+              </span>
+            </div>
+
+            {/* Description Section */}
             <div className="pt-6 border-t border-luxury-gold/20">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={selectedId}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="space-y-4"
-                >
-                  <p className="text-sm font-light text-luxury-charcoal/70 leading-relaxed font-serif">
-                    {activeFabric.description}
-                  </p>
-
-                  {/* Specifications Table */}
-                  {/* <div className="grid grid-cols-2 gap-4 pt-4 text-[10px] md:text-xs tracking-luxury text-luxury-charcoal/80 uppercase">
-                    <div>
-                      <span className="text-[#7A5C1E] font-medium">DENSITY</span>
-                      <span className="font-sans font-light text-[11px] block mt-1">{activeFabric.density}</span>
-                    </div>
-                    <div>
-                      <span className="text-[#7A5C1E] block font-medium">LOOM</span>
-                      <span className="font-sans font-light text-[11px] block mt-1">{activeFabric.loom}</span>
-                    </div>
-                    <div className="col-span-2 border-t border-luxury-gold/10 pt-2">
-                      <span className="text-[#7A5C1E] block font-medium">COMPOSITION</span>
-                      <span className="font-sans font-light text-[11px] block mt-1 normal-case">{activeFabric.composition}</span>
-                    </div>
-                  </div> */}
-                </motion.div>
-              </AnimatePresence>
+              <div className="space-y-4">
+                <p className="text-sm font-light text-luxury-charcoal/70 leading-relaxed font-serif">
+                  An opulent, highly structured textile utilizing real gold wire. Designed to catch light dynamically, this double-faced brocade displays deep champagne topography, creating a stunning metallic sheen for evening wear.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -203,19 +140,12 @@ export default function FabricShowcase() {
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
-              {/* Fade Active Image Transition */}
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={selectedId}
-                  src={activeFabric.imageSrc}
-                  alt={activeFabric.name}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8 }}
-                  className="h-full w-full select-none object-cover"
-                />
-              </AnimatePresence>
+              {/* Single Image */}
+              <img
+                src="/images/fabric_brocade.png"
+                alt="Aurelia Brocade Fabric"
+                className="h-full w-full select-none object-cover"
+              />
 
               {/* Magnifying Glass Lens overlay */}
               {isZoomActive && containerRef.current && (
@@ -226,23 +156,21 @@ export default function FabricShowcase() {
                     top: `${zoomPos.y - 90}px`,
                     width: "180px",
                     height: "180px",
-                    backgroundImage: `url(${activeFabric.imageSrc})`,
-                    backgroundSize: `${containerRef.current.clientWidth * 2.5}px ${containerRef.current.clientHeight * 2.5
-                      }px`,
-                    backgroundPosition: `-${zoomPos.x * 2.5 - 90}px -${zoomPos.y * 2.5 - 90
-                      }px`,
+                    backgroundImage: `url(/images/fabric_brocade.png)`,
+                    backgroundSize: `${containerRef.current.clientWidth * 2.5}px ${containerRef.current.clientHeight * 2.5}px`,
+                    backgroundPosition: `-${zoomPos.x * 2.5 - 90}px -${zoomPos.y * 2.5 - 90}px`,
                   }}
                 />
               )}
 
-              {/* Lens Instructions - changes based on device */}
+              {/* Lens Instructions */}
               <div className="pointer-events-none absolute right-4 top-4 z-20 rounded-full bg-luxury-charcoal/40 backdrop-blur-md px-3 py-1.5 border border-luxury-gold/10 transition-opacity duration-300 group-hover:opacity-0">
                 <span className="text-[9px] tracking-[0.2em] text-luxury-ivory uppercase font-semibold">
                   {isMobile ? "TAP & HOLD TO INSPECT" : "HOVER TO INSPECT WEAVE"}
                 </span>
               </div>
 
-              {/* Mobile touch instruction overlay - only show on client */}
+              {/* Mobile touch instruction overlay */}
               {isMobile && !isZoomActive && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/20 opacity-0 group-active:opacity-100 transition-opacity duration-300">
                   <span className="text-xs uppercase tracking-[0.2em] text-white bg-black/50 px-4 py-2 rounded-full">

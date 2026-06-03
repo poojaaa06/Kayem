@@ -1,11 +1,29 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useRef } from "react";
 import { ArrowRight, X } from "lucide-react";
+
+declare global {
+  interface Window {
+    grecaptcha: {
+      ready: (callback: () => void) => void;
+      render: (element: HTMLElement, options: {
+        sitekey: string;
+        callback: (token: string) => void;
+        'expired-callback'?: () => void;
+      }) => number;
+      reset: (widgetId?: number) => void;
+    };
+  }
+}
 
 export default function Footer() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const ACCESS_KEY = "d41237a7-74d8-484e-be57-97c81194f8ae";
+
+  // REPLACE THESE WITH YOUR ACTUAL VALUES
+  const FORMSPREE_ENDPOINT = "https://formspree.io/f/mrevzrel"; // Replace with your Formspree endpoint
+  const RECAPTCHA_SITE_KEY = "6LcngwotAAAAAPmvzE7ajQ-FqMpLkaUyPOttNuc0"; // Replace with your Google Site Key
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -17,11 +35,85 @@ export default function Footer() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaError, setCaptchaError] = useState(false);
+
+  const recaptchaRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<number | null>(null);
+  const scriptLoadedRef = useRef(false);
+
   useEffect(() => {
     const handler = () => setIsModalOpen(true);
     window.addEventListener("open-enquiry-modal", handler);
     return () => window.removeEventListener("open-enquiry-modal", handler);
   }, []);
+
+  // Load reCAPTCHA script when modal opens
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    // Load the reCAPTCHA script if not already loaded
+    if (!scriptLoadedRef.current && !document.querySelector('#recaptcha-script')) {
+      scriptLoadedRef.current = true;
+      const script = document.createElement('script');
+      script.id = 'recaptcha-script';
+      script.src = 'https://www.google.com/recaptcha/api.js';
+      script.async = true;
+      script.defer = true;
+
+      script.onload = () => {
+        // Wait for grecaptcha to be ready
+        const checkGrecaptcha = setInterval(() => {
+          if (window.grecaptcha) {
+            clearInterval(checkGrecaptcha);
+            if (recaptchaRef.current && window.grecaptcha) {
+              window.grecaptcha.ready(() => {
+                if (recaptchaRef.current && window.grecaptcha) {
+                  widgetIdRef.current = window.grecaptcha.render(recaptchaRef.current, {
+                    sitekey: RECAPTCHA_SITE_KEY,
+                    callback: (token: string) => {
+                      setCaptchaToken(token);
+                      setCaptchaError(false);
+                    },
+                    'expired-callback': () => {
+                      setCaptchaToken(null);
+                      setCaptchaError(true);
+                    },
+                  });
+                }
+              });
+            }
+          }
+        }, 100);
+
+        setTimeout(() => clearInterval(checkGrecaptcha), 10000);
+      };
+
+      document.body.appendChild(script);
+    } else if (window.grecaptcha && recaptchaRef.current && widgetIdRef.current === null) {
+      // Script already loaded, render widget
+      window.grecaptcha.ready(() => {
+        if (recaptchaRef.current && window.grecaptcha && widgetIdRef.current === null) {
+          widgetIdRef.current = window.grecaptcha.render(recaptchaRef.current, {
+            sitekey: RECAPTCHA_SITE_KEY,
+            callback: (token: string) => {
+              setCaptchaToken(token);
+              setCaptchaError(false);
+            },
+            'expired-callback': () => {
+              setCaptchaToken(null);
+              setCaptchaError(true);
+            },
+          });
+        }
+      });
+    }
+
+    return () => {
+      // Don't cleanup widget when modal closes - keep it for next time
+    };
+  }, [isModalOpen, RECAPTCHA_SITE_KEY]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -30,43 +122,40 @@ export default function Footer() {
     });
   };
 
-
   const handleContactSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!captchaToken) {
+      setCaptchaError(true);
+      alert("Please verify that you're not a robot.");
+      return;
+    }
+
     setIsSubmitting(true);
+    setSubmitError("");
+    setCaptchaError(false);
 
     try {
-      const formObject = {
-        access_key: "d41237a7-74d8-484e-be57-97c81194f8ae",
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("phone", formData.phone);
+      formDataToSend.append("email", formData.email);
+      formDataToSend.append("office_name", formData.officeName);
+      formDataToSend.append("office_address", formData.officeAddress);
+      formDataToSend.append("requirement", formData.requirement);
+      formDataToSend.append("additional_message", formData.additionalMessage);
+      formDataToSend.append("g-recaptcha-response", captchaToken);
 
-        name: formData.name,
-        phone: formData.phone,
-        email: formData.email,
-        office_name: formData.officeName,
-        office_address: formData.officeAddress,
-        requirement: formData.requirement,
-        additional_message: formData.additionalMessage,
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        body: formDataToSend,
+        headers: {
+          Accept: "application/json",
+        },
+      });
 
-        subject: "New Kayem Enquiry",
-      };
-
-      const response = await fetch(
-        "https://api.web3forms.com/submit",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(formObject),
-        }
-      );
-
-      const result = await response.json();
-
-      if (result.success) {
+      if (response.ok) {
         setSubmitSuccess(true);
-
         setFormData({
           name: "",
           phone: "",
@@ -77,14 +166,32 @@ export default function Footer() {
           additionalMessage: "",
         });
 
+        // Reset reCAPTCHA widget
+        if (widgetIdRef.current !== null && window.grecaptcha) {
+          window.grecaptcha.reset(widgetIdRef.current);
+        }
+        setCaptchaToken(null);
+
         setTimeout(() => {
           setSubmitSuccess(false);
           setIsModalOpen(false);
         }, 2000);
+      } else {
+        const errorData = await response.json();
+        if (errorData?.errors?.captcha) {
+          setSubmitError("reCAPTCHA verification failed. Please try again.");
+          // Reset reCAPTCHA on error
+          if (widgetIdRef.current !== null && window.grecaptcha) {
+            window.grecaptcha.reset(widgetIdRef.current);
+          }
+          setCaptchaToken(null);
+        } else {
+          setSubmitError("Failed to send enquiry. Please try again.");
+        }
       }
     } catch (error) {
       console.error(error);
-      alert("Failed to send enquiry.");
+      setSubmitError("Failed to send enquiry. Please check your connection.");
     }
 
     setIsSubmitting(false);
@@ -194,7 +301,6 @@ export default function Footer() {
           {/* Footer Bottom Metadata & Large Watermark Logo */}
           <div className="pt-12 flex flex-col md:flex-row items-center justify-between text-[10px] tracking-luxury text-luxury-ivory/40 uppercase font-sans">
             <span>&copy; {new Date().getFullYear()} KAYEM SYNTHETICS. ALL RIGHTS RESERVED.</span>
-
           </div>
 
           {/* Giant Watermark Background Wordmark */}
@@ -275,7 +381,7 @@ export default function Footer() {
 
               <div>
                 <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
-                  Office / Company Name *
+                  Company Name *
                 </label>
                 <input
                   type="text"
@@ -290,7 +396,7 @@ export default function Footer() {
 
               <div>
                 <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
-                  Office Address *
+                  Company Address *
                 </label>
                 <input
                   type="text"
@@ -331,6 +437,21 @@ export default function Footer() {
                   placeholder="Tell us more about your requirements..."
                 />
               </div>
+
+              {/* reCAPTCHA v2 Checkbox Widget */}
+              <div className="flex justify-center py-2">
+                <div ref={recaptchaRef}></div>
+              </div>
+
+              {captchaError && (
+                <p className="text-red-500 text-xs text-center">
+                  Please verify that you're not a robot.
+                </p>
+              )}
+
+              {submitError && (
+                <p className="text-red-500 text-xs text-center">{submitError}</p>
+              )}
 
               {/* Submit Button */}
               <div className="pt-4">

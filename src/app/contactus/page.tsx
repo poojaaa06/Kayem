@@ -1,13 +1,29 @@
 "use client";
 
-import { useState, FormEvent } from "react";
-import { Mail, Phone, MapPin, Clock, Send, Camera } from "lucide-react";
+import { useState, FormEvent, useEffect, useRef } from "react";
+import { Mail, Phone, MapPin, Clock, Send } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
+declare global {
+    interface Window {
+        grecaptcha: {
+            ready: (callback: () => void) => void;
+            render: (element: HTMLElement, options: {
+                sitekey: string;
+                callback: (token: string) => void;
+                'expired-callback'?: () => void;
+            }) => number;
+            reset: (widgetId?: number) => void;
+        };
+    }
+}
+
 export default function Contact() {
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitSuccess, setSubmitSuccess] = useState(false);
+    // Replace with your actual values
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mrevzrel"; // Replace with your Formspree endpoint
+    const RECAPTCHA_SITE_KEY = "6LcngwotAAAAAPmvzE7ajQ-FqMpLkaUyPOttNuc0"; // Replace with your Google Site Key
+
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
@@ -17,8 +33,72 @@ export default function Contact() {
         requirement: "",
         additionalMessage: ""
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [submitError, setSubmitError] = useState("");
+    const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+    const [captchaError, setCaptchaError] = useState(false);
 
-    const ACCESS_KEY = "d41237a7-74d8-484e-be57-97c81194f8ae";
+    const recaptchaRef = useRef<HTMLDivElement>(null);
+    const widgetIdRef = useRef<number | null>(null);
+    const scriptLoadedRef = useRef(false);
+
+    // Load reCAPTCHA script on component mount
+    useEffect(() => {
+        if (!scriptLoadedRef.current && !document.querySelector('#recaptcha-script')) {
+            scriptLoadedRef.current = true;
+            const script = document.createElement('script');
+            script.id = 'recaptcha-script';
+            script.src = 'https://www.google.com/recaptcha/api.js';
+            script.async = true;
+            script.defer = true;
+
+            script.onload = () => {
+                const checkGrecaptcha = setInterval(() => {
+                    if (window.grecaptcha) {
+                        clearInterval(checkGrecaptcha);
+                        if (recaptchaRef.current && window.grecaptcha) {
+                            window.grecaptcha.ready(() => {
+                                if (recaptchaRef.current && window.grecaptcha) {
+                                    widgetIdRef.current = window.grecaptcha.render(recaptchaRef.current, {
+                                        sitekey: RECAPTCHA_SITE_KEY,
+                                        callback: (token: string) => {
+                                            setCaptchaToken(token);
+                                            setCaptchaError(false);
+                                        },
+                                        'expired-callback': () => {
+                                            setCaptchaToken(null);
+                                            setCaptchaError(true);
+                                        },
+                                    });
+                                }
+                            });
+                        }
+                    }
+                }, 100);
+
+                setTimeout(() => clearInterval(checkGrecaptcha), 10000);
+            };
+
+            document.body.appendChild(script);
+        } else if (window.grecaptcha && recaptchaRef.current && widgetIdRef.current === null) {
+            window.grecaptcha.ready(() => {
+                if (recaptchaRef.current && window.grecaptcha && widgetIdRef.current === null) {
+                    widgetIdRef.current = window.grecaptcha.render(recaptchaRef.current, {
+                        sitekey: RECAPTCHA_SITE_KEY,
+                        callback: (token: string) => {
+                            setCaptchaToken(token);
+                            setCaptchaError(false);
+                        },
+                        'expired-callback': () => {
+                            setCaptchaToken(null);
+                            setCaptchaError(true);
+                        },
+                    });
+                }
+            });
+        }
+    }, [RECAPTCHA_SITE_KEY]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setFormData({
@@ -26,6 +106,79 @@ export default function Contact() {
             [e.target.name]: e.target.value
         });
     };
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+
+        if (!captchaToken) {
+            setCaptchaError(true);
+            alert("Please verify that you're not a robot.");
+            return;
+        }
+
+        setIsSubmitting(true);
+        setSubmitError("");
+        setCaptchaError(false);
+
+        try {
+            const formDataToSend = new FormData();
+            formDataToSend.append("name", formData.name);
+            formDataToSend.append("phone", formData.phone);
+            formDataToSend.append("email", formData.email);
+            formDataToSend.append("office_name", formData.officeName);
+            formDataToSend.append("office_address", formData.officeAddress);
+            formDataToSend.append("requirement", formData.requirement);
+            formDataToSend.append("additional_message", formData.additionalMessage);
+            formDataToSend.append("g-recaptcha-response", captchaToken);
+
+            const response = await fetch(FORMSPREE_ENDPOINT, {
+                method: "POST",
+                body: formDataToSend,
+                headers: {
+                    Accept: "application/json",
+                },
+            });
+
+            if (response.ok) {
+                setSubmitSuccess(true);
+                setFormData({
+                    name: "",
+                    phone: "",
+                    email: "",
+                    officeName: "",
+                    officeAddress: "",
+                    requirement: "",
+                    additionalMessage: "",
+                });
+
+                if (widgetIdRef.current !== null && window.grecaptcha) {
+                    window.grecaptcha.reset(widgetIdRef.current);
+                }
+                setCaptchaToken(null);
+
+                setTimeout(() => {
+                    setSubmitSuccess(false);
+                }, 3000);
+            } else {
+                const errorData = await response.json();
+                if (errorData?.errors?.captcha) {
+                    setSubmitError("reCAPTCHA verification failed. Please try again.");
+                    if (widgetIdRef.current !== null && window.grecaptcha) {
+                        window.grecaptcha.reset(widgetIdRef.current);
+                    }
+                    setCaptchaToken(null);
+                } else {
+                    setSubmitError("Failed to send enquiry. Please try again.");
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            setSubmitError("Failed to send enquiry. Please check your connection.");
+        }
+
+        setIsSubmitting(false);
+    };
+
     const InstagramIcon = () => (
         <svg
             width="18"
@@ -44,64 +197,13 @@ export default function Contact() {
         </svg>
     );
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        try {
-            const formObject = {
-                access_key: ACCESS_KEY,
-                name: formData.name,
-                phone: formData.phone,
-                email: formData.email,
-                office_name: formData.officeName,
-                office_address: formData.officeAddress,
-                requirement: formData.requirement,
-                additional_message: formData.additionalMessage,
-                subject: "Contact Form Enquiry - Kayem Synthetics",
-            };
-
-            const response = await fetch("https://api.web3forms.com/submit", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-                body: JSON.stringify(formObject),
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                setSubmitSuccess(true);
-                setFormData({
-                    name: "",
-                    phone: "",
-                    email: "",
-                    officeName: "",
-                    officeAddress: "",
-                    requirement: "",
-                    additionalMessage: "",
-                });
-
-                setTimeout(() => {
-                    setSubmitSuccess(false);
-                }, 3000);
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Failed to send enquiry. Please try again.");
-        }
-
-        setIsSubmitting(false);
-    };
-
     const contactInfo = [
         {
             icon: MapPin,
             title: "HEAD OFFICE",
             details: ["A-802, 8th Floor, Swastik Universal,", "Near Valentine Cinema, Piplod,", "Surat, Gujarat - 395007, India"],
-            link: null
+            link: "https://maps.app.goo.gl/TPiHLauBwo3deBvA8?g_st=aw",
+            linkText: "Open in Maps →"
         },
         {
             icon: Phone,
@@ -135,7 +237,7 @@ export default function Contact() {
             <Navbar />
             <main className="min-h-screen bg-luxury-cream text-luxury-charcoal">
 
-                {/* Hero Section - Simple */}
+                {/* Hero Section */}
                 <section className="pt-32 pb-16 md:pt-40 md:pb-20">
                     <div className="max-w-7xl mx-auto px-6 md:px-16">
                         <div className="max-w-3xl">
@@ -167,7 +269,7 @@ export default function Contact() {
                             </div>
 
                             <div className="space-y-4">
-                                {contactInfo.map((info, idx) => (
+                                {contactInfo.map((info) => (
                                     <div
                                         key={info.title}
                                         className="group flex items-start gap-5 p-5 rounded-2xl bg-white/50 border border-[#7A5C1E]/10 hover:border-[#7A5C1E]/25 hover:bg-white transition-all duration-300"
@@ -179,7 +281,23 @@ export default function Contact() {
                                             <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#7A5C1E] mb-1">
                                                 {info.title}
                                             </h3>
-                                            {info.link ? (
+                                            {info.link && info.linkText ? (
+                                                <>
+                                                    {info.details.map((line, i) => (
+                                                        <p key={i} className="text-sm md:text-base text-luxury-charcoal/80 leading-relaxed">
+                                                            {line}
+                                                        </p>
+                                                    ))}
+                                                    <a
+                                                        href={info.link}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-block mt-1 text-xs text-[#7A5C1E] hover:text-[#7A5C1E]/70 transition-colors"
+                                                    >
+                                                        {info.linkText}
+                                                    </a>
+                                                </>
+                                            ) : info.link ? (
                                                 <a href={info.link} target={info.isSocial ? "_blank" : undefined} rel={info.isSocial ? "noopener noreferrer" : undefined} className="block text-sm md:text-base text-luxury-charcoal/80 hover:text-[#7A5C1E] transition-colors">
                                                     {info.details[0]}
                                                 </a>
@@ -260,7 +378,7 @@ export default function Contact() {
 
                                     <div>
                                         <label className="block text-[10px] tracking-widest text-luxury-gold uppercase mb-2">
-                                            Office / Company Name *
+                                            Company Name *
                                         </label>
                                         <input
                                             type="text"
@@ -275,7 +393,7 @@ export default function Contact() {
 
                                     <div>
                                         <label className="block text-[10px] tracking-widest text-luxury-gold uppercase mb-2">
-                                            Office Address *
+                                            Company Address *
                                         </label>
                                         <input
                                             type="text"
@@ -316,6 +434,21 @@ export default function Contact() {
                                             placeholder="Tell us more about your requirements..."
                                         />
                                     </div>
+
+                                    {/* reCAPTCHA */}
+                                    <div className="flex justify-center py-2">
+                                        <div ref={recaptchaRef}></div>
+                                    </div>
+
+                                    {captchaError && (
+                                        <p className="text-red-500 text-xs text-center">
+                                            Please verify that you're not a robot.
+                                        </p>
+                                    )}
+
+                                    {submitError && (
+                                        <p className="text-red-500 text-xs text-center">{submitError}</p>
+                                    )}
 
                                     <button
                                         type="submit"

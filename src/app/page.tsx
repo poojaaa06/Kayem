@@ -22,7 +22,7 @@ export default function Home() {
       {/* <MaterialStory /> */}
       <FabricShowcase />
       <ProcessPin />
-      <InstagramFeed />
+      {/* <InstagramFeed /> */}
       <BrandReveal />
 
       <Footer />
