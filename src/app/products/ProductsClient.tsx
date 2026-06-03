@@ -317,7 +317,7 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                 {/* ── HERO ── */}
                 <section ref={heroRef} className="relative min-h-[85vh] overflow-hidden pt-56 md:h-[90vh] md:pt-0">
                     <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
-                        <Image src="/images/product-hero.png" alt="Colourful yarn cones in a textile mill" fill className="object-cover" priority />
+                        <Image src="/images/producthero.jpeg" alt="Colourful yarn cones in a textile mill" fill className="object-cover" priority />
                     </motion.div>
                     <div className="absolute inset-0">
                         <div className="absolute inset-0 bg-gradient-to-b from-luxury-cream/90 via-luxury-cream/50 to-luxury-cream" />
