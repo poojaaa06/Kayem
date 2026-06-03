@@ -72,7 +72,7 @@ export default function SequenceCanvas() {
             setVideoLoaded(true);
           }}
         >
-          <source src="/images/hero_video.mp4" type="video/mp4" />
+          <source src="/images/watermark-removed-hero_video.mp4" type="video/mp4" />
         </video>
 
         {/* Overlay for better text readability */}

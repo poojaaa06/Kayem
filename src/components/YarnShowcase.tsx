@@ -124,7 +124,7 @@ export function YarnShowcase() {
                         </p>
                         <h2 className="font-display text-5xl md:text-7xl font-light leading-[0.95] text-luxury-charcoal">
                             Our Yarn Range.<br />
-                            <span className="italic text-[#7A5C1E]">50D — 500D</span>
+                            <span className="italic text-[#7A5C1E] " style={{ fontVariantNumeric: "lining-nums" }}>50D — 1100D</span>
                         </h2>
                     </div>
                     <p className="max-w-md text-luxury-charcoal/70 leading-relaxed font-serif text-md">
