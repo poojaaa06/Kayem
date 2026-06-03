@@ -9,7 +9,7 @@ import Footer from "@/components/Footer";
 import { YarnShowcase } from "@/components/YarnShowcase";
 import { ProcessPin } from "@/components/ProcessPin"
 import { Stats } from "@/components/Stats";
-
+import InstagramFeed from "@/components/Instgram";
 export default function Home() {
   return (
     <main className="relative min-h-screen">
@@ -22,7 +22,9 @@ export default function Home() {
       {/* <MaterialStory /> */}
       <FabricShowcase />
       <ProcessPin />
+      <InstagramFeed />
       <BrandReveal />
+
       <Footer />
     </main>
   );
