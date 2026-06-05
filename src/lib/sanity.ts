@@ -82,3 +82,23 @@ export const POST_BY_SLUG_QUERY = `
 export const ALL_POST_SLUGS_QUERY = `
   *[_type == "blogPost"] { "slug": slug.current }
 `
+
+// ── Fabric queries ────────────────────────────────────────────────────────────
+
+export const ALL_FABRICS_QUERY = `
+  *[_type == "fabric"] | order(order asc) {
+    name,
+    "slug": slug.current,
+    tagline,
+    description,
+    "heroImage": heroImage.asset->url,
+    order,
+    specifications[] {
+      label,
+      value,
+      unit
+    },
+    applications,
+    features
+  }
+`
