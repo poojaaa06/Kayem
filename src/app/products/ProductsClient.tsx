@@ -330,7 +330,7 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                             transition={{ delay: 0.6, duration: 1 }}
                             className="mb-4 sm:mb-6 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]"
                         >
-                            — The Library · 50D to 550D
+                            — The Library · 50D to 1100D
                         </motion.p>
                         <h1 className="max-w-6xl font-display text-[12vw] font-light leading-[0.9] md:text-[7.5vw]">
                             {["A", "spectrum", "of", "speciality", "yarn."].map((w, i) => (
