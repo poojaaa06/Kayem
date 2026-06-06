@@ -263,34 +263,72 @@ function ExpandableCategory({ index, title, items }: {
     );
 }
 
-// ── Application Card ──────────────────────────────────────────────────────────
-function AppCard({ index, title, tag, image, alt }: {
-    index: string; title: string; tag: string; image: string; alt: string;
+// ── Application Card with Description ──────────────────────────────────────────
+function AppCard({ index, title, tag, description, image, alt }: {
+    index: string; title: string; tag: string; description: string; image: string; alt: string;
 }) {
     return (
         <motion.div
             whileHover={{ y: -4 }}
             transition={{ duration: 0.3 }}
-            className="relative rounded-xl overflow-hidden aspect-[3/4] w-[160px] sm:w-[200px] md:w-auto cursor-pointer group flex-shrink-0"
+            className="group relative rounded-xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
         >
-            <Image src={image} alt={alt} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
-                <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.2em] text-[#C9A84C] mb-0.5">{index}</p>
-                <p className="font-display text-sm sm:text-base md:text-lg text-white leading-tight">{title}</p>
-                <p className="text-white/50 text-[7px] sm:text-[9px] mt-0.5">{tag}</p>
+            <div className="relative aspect-[3/4] overflow-hidden">
+                <Image src={image} alt={alt} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+                <p className="font-mono text-[8px] sm:text-[9px] tracking-[0.2em] text-[#C9A84C] mb-1">{index}</p>
+                <p className="font-display text-base sm:text-lg text-white leading-tight font-semibold">{title}</p>
+                <p className="text-[#C9A84C]/70 text-[8px] sm:text-[10px] mt-0.5 mb-2">{tag}</p>
+                <p className="text-white/70 text-[9px] sm:text-[11px] leading-relaxed line-clamp-3">{description}</p>
             </div>
         </motion.div>
     );
 }
 
-// ── Static data (applications stay hardcoded — no CMS needed) ─────────────────
+// ── Static data with descriptions ─────────────────────────────────────────────
 const applications = [
-    { index: "01", title: "Sarees", tag: "Drape & lustre", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80", alt: "Vibrant saree" },
-    { index: "02", title: "Dress Materials", tag: "Texture & flow", image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=600&q=80", alt: "Dress fabric" },
-    { index: "03", title: "Curtains", tag: "Weight & fall", image: "/images/curtain.jpg", alt: "Curtains" },
-    { index: "04", title: "Upholstery", tag: "Strength & finish", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80", alt: "Sofa" },
-    { index: "05", title: "Carpets", tag: "Pile & resilience", image: "/images/carpet.jpg", alt: "Carpet" },
+    {
+        index: "01",
+        title: "Sarees",
+        tag: "Drape & lustre",
+        description: "Premium yarns that create sarees with elegant drape, rich texture, and lasting beauty.",
+        image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80",
+        alt: "Vibrant saree"
+    },
+    {
+        index: "02",
+        title: "Dress Materials",
+        tag: "Texture & flow",
+        description: "Versatile yarns engineered for comfort, softness, and superior fabric performance.",
+        image: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=600&q=80",
+        alt: "Dress fabric"
+    },
+    {
+        index: "03",
+        title: "Curtains",
+        tag: "Weight & fall",
+        description: "High-quality yarns delivering excellent fall, durability, and refined aesthetics.",
+        image: "/images/curtain.jpg",
+        alt: "Curtains"
+    },
+    {
+        index: "04",
+        title: "Upholstery",
+        tag: "Strength & finish",
+        description: "Strong and resilient yarns designed for furniture fabrics with lasting strength and finish.",
+        image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80",
+        alt: "Sofa"
+    },
+    {
+        index: "05",
+        title: "Carpets",
+        tag: "Pile & resilience",
+        description: "Durable yarns crafted to provide texture, resilience, and long-term wear resistance.",
+        image: "/images/carpet.jpg",
+        alt: "Carpet"
+    },
 ];
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -330,7 +368,7 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                             transition={{ delay: 0.6, duration: 1 }}
                             className="mb-4 sm:mb-6 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]"
                         >
-                            — The Library · 50D to 1100D
+                            — The Library · 40D to 1100D
                         </motion.p>
                         <h1 className="max-w-6xl font-display text-[12vw] font-light leading-[0.9] md:text-[7.5vw]">
                             {["A", "spectrum", "of", "speciality", "yarn."].map((w, i) => (
@@ -415,7 +453,7 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                     ))}
                 </section>
 
-                {/* ── APPLICATIONS ── */}
+                {/* ── APPLICATIONS with descriptions ── */}
                 <section className="relative overflow-hidden border-y border-[#7A5C1E]/20 px-5 sm:px-6 py-20 sm:py-32 md:px-16">
                     <div className="absolute inset-0">
                         <div className="absolute inset-0 bg-gradient-to-b from-[#D4AF37]/5 via-[#7A5C1E]/8 to-[#F5E6D3]/20" />
@@ -438,7 +476,9 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                             <div className="overflow-x-auto pb-4 -mx-5 px-5">
                                 <div className="flex gap-4" style={{ minWidth: 'min-content' }}>
                                     {applications.map((app) => (
-                                        <AppCard key={app.title} {...app} />
+                                        <div key={app.title} className="w-[220px]">
+                                            <AppCard {...app} />
+                                        </div>
                                     ))}
                                 </div>
                             </div>

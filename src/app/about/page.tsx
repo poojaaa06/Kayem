@@ -183,7 +183,7 @@ export default function About() {
                             transition={{ delay: 1.2, duration: 1 }}
                             className="mt-10 max-w-xl font-serif leading-relaxed text-luxury-charcoal/70"
                         >
-                            Forty years of spinning excellence. Three generations of mastery. One yarn at a time.
+                            Decades of yarn innovation...
                         </motion.p>
                     </div>
                 </section>

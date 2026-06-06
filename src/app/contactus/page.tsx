@@ -227,7 +227,7 @@ export default function Contact() {
         {
             icon: Clock,
             title: "BUSINESS HOURS",
-            details: ["Monday - Saturday", "10:00 AM - 7:00 PM"],
+            details: ["Monday - Saturday", "11:00 AM - 6:30 PM"],
             link: null
         }
     ];

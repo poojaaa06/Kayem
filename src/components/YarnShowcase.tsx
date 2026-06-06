@@ -9,7 +9,7 @@ const yarns = [
         img: "/images/NYLON.jpeg",
         name: "Nylon Yarn",
         code: "",
-        desc: "Premium nylon air textured yarn with excellent coverage, bulk, and soft hand feel.",
+        desc: "Premium nylon yarn with excellent coverage, bulk, and soft hand feel.",
         count: ""
     },
     {
@@ -23,7 +23,7 @@ const yarns = [
         img: "/images/dopedyed.jpeg",
         name: "Polyester Yarn",
         code: "",
-        desc: "Dope dyed polyester yarns with vibrant, long-lasting colorfastness and strength.",
+        desc: "Premium catonic fancy dyed yarn for outstanding feel and luster.",
         count: ""
     },
 ];
@@ -124,11 +124,11 @@ export function YarnShowcase() {
                         </p>
                         <h2 className="font-display text-5xl md:text-7xl font-light leading-[0.95] text-luxury-charcoal">
                             Our Yarn Range.<br />
-                            <span className="italic text-[#7A5C1E] " style={{ fontVariantNumeric: "lining-nums" }}>50D — 1100D</span>
+                            <span className="italic text-[#7A5C1E] " style={{ fontVariantNumeric: "lining-nums" }}>40D — 1100D</span>
                         </h2>
                     </div>
                     <p className="max-w-md text-luxury-charcoal/70 leading-relaxed font-serif text-md">
-                        Our product range includes premium nylon, viscose, and polyester yarns,
+                        Our product range includes premium NYLON, VISCOSE, and POLYESTER yarns,
                         crafted for excellence in every thread.
                     </p>
                 </motion.div>

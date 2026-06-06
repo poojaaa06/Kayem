@@ -1,7 +1,7 @@
 const phrases = [
   "Premium Quality ",
   "Market Leader",
-  "Polyester Catonic",
+  "Polyester Catonic Yarns",
   "Nylon Yarns",
   "Viscose Yarns"
 ];
