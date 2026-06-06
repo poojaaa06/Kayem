@@ -157,7 +157,7 @@ export default function About() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6, duration: 1 }}
-                            className="mb-6 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]"
+                            className="mb-6 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-white"
                         >
                             — Since 1985
                         </motion.p>
@@ -267,7 +267,7 @@ export default function About() {
                 </section>
 
                 {/* VISIONARY TEAM SECTION */}
-                <section className="relative border-t border-[#7A5C1E]/20 bg-gradient-to-br from-luxury-ivory via-[#F5E6D3]/30 to-luxury-ivory px-6 py-32 md:px-16">
+                {/* <section className="relative border-t border-[#7A5C1E]/20 bg-gradient-to-br from-luxury-ivory via-[#F5E6D3]/30 to-luxury-ivory px-6 py-32 md:px-16">
                     {!isMobile && (
                         <div className="absolute inset-0">
                             <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-[#D4AF37]/10 blur-3xl" />
@@ -334,7 +334,7 @@ export default function About() {
                             ))}
                         </div>
                     </div>
-                </section>
+                </section> */}
 
                 {/* CONNECT WITH US SECTION */}
                 <section className="relative overflow-hidden px-6 py-32 md:px-16">
