@@ -54,7 +54,8 @@ export default function FabricShowcase() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [isZoomActive, setIsZoomActive] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  // Covers phones AND tablets — anything with a touch screen
+  const [isTouch, setIsTouch] = useState(false);
   const [imagesLoaded, setImagesLoaded] = useState<{ [key: string]: boolean }>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
   const directionRef = useRef(0);
@@ -65,24 +66,39 @@ export default function FabricShowcase() {
   const totalItems = fabricItems.length;
 
   useEffect(() => {
-    const allImagePaths = fabricItems.map(item => item.imagePath);
+    const allImagePaths = fabricItems.map((item) => item.imagePath);
     preloadImages(allImagePaths);
-
-    allImagePaths.forEach(path => {
+    allImagePaths.forEach((path) => {
       const img = new Image();
-      img.onload = () => {
-        setImagesLoaded(prev => ({ ...prev, [path]: true }));
-      };
+      img.onload = () => setImagesLoaded((prev) => ({ ...prev, [path]: true }));
       img.src = path;
     });
   }, []);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
-    };
-    checkMobile();
+    // Touch detection: covers phones, iPads, Android tablets, Surface, etc.
+    setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
   }, []);
+
+  // Non-passive touch listener so preventDefault() actually blocks scroll
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const onTouchMove = (e: globalThis.TouchEvent) => {
+      if (!isZoomActive) return;
+      e.preventDefault(); // blocks page scroll while zooming
+
+      const touch = e.touches[0];
+      const { left, top, width, height } = el.getBoundingClientRect();
+      const x = Math.max(0, Math.min(width, touch.clientX - left));
+      const y = Math.max(0, Math.min(height, touch.clientY - top));
+      setZoomPos({ x, y });
+    };
+
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => el.removeEventListener("touchmove", onTouchMove);
+  }, [isZoomActive]);
 
   const handleNext = () => {
     directionRef.current = 1;
@@ -97,80 +113,58 @@ export default function FabricShowcase() {
   };
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (isMobile) return;
+    if (isTouch) return;
     const container = containerRef.current;
     if (!container || !isZoomActive) return;
 
     const { left, top, width, height } = container.getBoundingClientRect();
     const x = Math.max(0, Math.min(width, e.clientX - left));
     const y = Math.max(0, Math.min(height, e.clientY - top));
-
     setZoomPos({ x, y });
   };
 
-  const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
-    if (!isMobile || !containerRef.current || !isZoomActive) return;
-    e.preventDefault();
+  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    if (!isTouch) return;
+    setIsZoomActive(true);
 
+    // Capture initial position immediately on touch start too
     const container = containerRef.current;
+    if (!container) return;
     const touch = e.touches[0];
     const { left, top, width, height } = container.getBoundingClientRect();
     const x = Math.max(0, Math.min(width, touch.clientX - left));
     const y = Math.max(0, Math.min(height, touch.clientY - top));
-
     setZoomPos({ x, y });
   };
 
-  const handleTouchStart = () => {
-    if (isMobile) setIsZoomActive(true);
-  };
-
   const handleTouchEnd = () => {
-    if (isMobile) setIsZoomActive(false);
+    if (isTouch) setIsZoomActive(false);
   };
 
   const handleMouseEnter = () => {
-    if (!isMobile) {
+    if (!isTouch) {
       isMouseInsideRef.current = true;
       setIsZoomActive(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (!isMobile) {
+    if (!isTouch) {
       isMouseInsideRef.current = false;
       setIsZoomActive(false);
     }
   };
 
   const slideVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 100 : -100,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction > 0 ? -100 : 100,
-      opacity: 0,
-    }),
+    enter: (direction: number) => ({ x: direction > 0 ? 100 : -100, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction: number) => ({ x: direction > 0 ? -100 : 100, opacity: 0 }),
   };
 
   const textVariants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 30 : -30,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction: number) => ({
-      x: direction > 0 ? -30 : 30,
-      opacity: 0,
-    }),
+    enter: (direction: number) => ({ x: direction > 0 ? 30 : -30, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction: number) => ({ x: direction > 0 ? -30 : 30, opacity: 0 }),
   };
 
   return (
@@ -194,7 +188,7 @@ export default function FabricShowcase() {
             </h2>
           </div>
           <p className="max-w-md text-luxury-charcoal/60 leading-relaxed font-serif text-md">
-            {isMobile
+            {isTouch
               ? "Tap and hold on the image to magnify the weft structure."
               : "Hover over the showcase image to magnify the weft structure."}
           </p>
@@ -233,11 +227,9 @@ export default function FabricShowcase() {
                 </div>
 
                 <div className="pt-6 border-t border-luxury-gold/20">
-                  <div className="space-y-4">
-                    <p className="text-md font-light text-luxury-charcoal/70 leading-relaxed font-serif">
-                      {currentFabric.description}
-                    </p>
-                  </div>
+                  <p className="text-md font-light text-luxury-charcoal/70 leading-relaxed font-serif">
+                    {currentFabric.description}
+                  </p>
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -253,22 +245,22 @@ export default function FabricShowcase() {
                     setCurrentIndex(idx);
                   }}
                   className={`transition-all duration-300 rounded-full ${idx === currentIndex
-                    ? "w-8 h-2 bg-luxury-gold"
-                    : "w-2 h-2 bg-luxury-gold/30 hover:bg-luxury-gold/60"
+                      ? "w-8 h-2 bg-luxury-gold"
+                      : "w-2 h-2 bg-luxury-gold/30 hover:bg-luxury-gold/60"
                     }`}
                   aria-label={`Go to fabric ${idx + 1}`}
                 />
               ))}
             </div>
 
-            {/* Mobile Arrows */}
+            {/* Mobile/Tablet Arrows */}
             <div className="flex items-center justify-center gap-4 lg:hidden pt-2">
               <button
                 onClick={handlePrev}
                 className="p-3 rounded-full border border-luxury-gold/30 bg-white/50 hover:bg-luxury-gold/10 transition-colors"
                 aria-label="Previous fabric"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
@@ -280,7 +272,7 @@ export default function FabricShowcase() {
                 className="p-3 rounded-full border border-luxury-gold/30 bg-white/50 hover:bg-luxury-gold/10 transition-colors"
                 aria-label="Next fabric"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </button>
@@ -295,9 +287,9 @@ export default function FabricShowcase() {
               onMouseMove={handleMouseMove}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              onTouchMove={handleTouchMove}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
+            // onTouchMove intentionally omitted — handled via non-passive useEffect above
             >
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.img
@@ -313,7 +305,7 @@ export default function FabricShowcase() {
                   className={`h-full w-full select-none object-cover transition-opacity duration-300 ${imagesLoaded[currentFabric.imagePath] ? "opacity-100" : "opacity-0"
                     }`}
                   onLoad={() => {
-                    setImagesLoaded(prev => ({ ...prev, [currentFabric.imagePath]: true }));
+                    setImagesLoaded((prev) => ({ ...prev, [currentFabric.imagePath]: true }));
                   }}
                 />
               </AnimatePresence>
@@ -342,17 +334,9 @@ export default function FabricShowcase() {
 
               <div className="pointer-events-none absolute right-4 top-4 z-20 rounded-full bg-luxury-charcoal/40 backdrop-blur-md px-3 py-1.5 border border-luxury-gold/10 transition-opacity duration-300 group-hover:opacity-50">
                 <span className="text-[9px] tracking-[0.2em] text-luxury-ivory uppercase font-semibold">
-                  {isMobile ? "TAP & HOLD TO INSPECT" : "HOVER TO INSPECT WEAVE"}
+                  {isTouch ? "TAP & HOLD TO INSPECT" : "HOVER TO INSPECT WEAVE"}
                 </span>
               </div>
-
-              {isMobile && !isZoomActive && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/20 opacity-0 group-active:opacity-100 transition-opacity duration-300">
-                  <span className="text-xs uppercase tracking-[0.2em] text-white bg-black/50 px-4 py-2 rounded-full">
-                    Touch and hold to zoom
-                  </span>
-                </div>
-              )}
 
               {/* Desktop Arrow Overlays */}
               <div className="absolute inset-y-0 left-0 right-0 z-10">
@@ -361,7 +345,7 @@ export default function FabricShowcase() {
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-luxury-charcoal/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-all duration-300 hover:bg-luxury-gold/70 hover:scale-110 focus:outline-none"
                   aria-label="Previous fabric"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
@@ -370,7 +354,7 @@ export default function FabricShowcase() {
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-luxury-charcoal/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-all duration-300 hover:bg-luxury-gold/70 hover:scale-110 focus:outline-none"
                   aria-label="Next fabric"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                     <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
