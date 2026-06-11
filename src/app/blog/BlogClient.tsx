@@ -226,7 +226,7 @@ export default function BlogClient({ featured, posts }: { featured: Post | null;
                             className="mt-10 max-w-xl font-serif leading-relaxed text-luxury-charcoal/70"
                         >
                             Essays, studio diaries, and quiet observations from four decades of
-                            making speciality yarn — written by the hands behind the spindle.
+                            making speciality yarn - written by the hands behind the spindle.
                         </motion.p>
                     </div>
                 </section>

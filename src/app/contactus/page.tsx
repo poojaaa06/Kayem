@@ -249,7 +249,7 @@ export default function Contact() {
                             </h1>
                             <p className="mt-6 font-serif text-base md:text-lg text-luxury-charcoal/70 max-w-2xl">
                                 Whether you're looking for custom yarn solutions, have a question about our products,
-                                or want to discuss a partnership — we'd love to hear from you.
+                                or want to discuss a partnership - we'd love to hear from you.
                             </p>
                         </div>
                     </div>

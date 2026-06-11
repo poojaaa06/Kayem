@@ -41,8 +41,8 @@ function MagneticButton({ children, className = "", variant = "primary", onClick
 }
 
 // ── Accordion Category ────────────────────────────────────────────────────────
-function ExpandableCategory({ index, title, items }: {
-    index: string; title: string; items: string[];
+function ExpandableCategory({ index, title, items, showNote = false }: {
+    index: string; title: string; items: string[]; showNote?: boolean;
 }) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -87,6 +87,14 @@ function ExpandableCategory({ index, title, items }: {
                         className="overflow-hidden"
                     >
                         <div className="pb-6 sm:pb-8 px-4 sm:px-6">
+                            {/* Note for Viscose Plain ATY section */}
+                            {showNote && (
+                                <div className="mb-5 p-3 sm:p-4 rounded-lg bg-[#7A5C1E]/5 border-l-4 border-[#7A5C1E]">
+                                    <p className="text-[11px] sm:text-xs text-black/70 ">
+                                        All Viscose ATY yarns are Jilin-based.
+                                    </p>
+                                </div>
+                            )}
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="h-px w-12 bg-gradient-to-r from-[#7A5C1E]/40 to-transparent" />
                                 <span className="text-[8px] sm:text-[9px] tracking-[0.3em] text-[#7A5C1E]/50 font-sans uppercase">Available deniers</span>
@@ -238,7 +246,7 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                             transition={{ delay: 1.2, duration: 1 }}
                             className="mt-6 sm:mt-10 max-w-sm sm:max-w-xl font-serif text-sm sm:text-base leading-relaxed text-luxury-charcoal/70"
                         >
-                            Complete range of Nylon, Viscose & Specialty yarns. Custom developments on request — every yarn tuned for hand, drape, and the quiet luxury of finished fabric.
+                            Complete range of Nylon, Viscose & Specialty yarns. Custom developments on request - every yarn tuned for hand, drape, and the quiet luxury of finished fabric.
                         </motion.p>
                     </div>
                 </section>
@@ -290,12 +298,17 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                                 transition={{ duration: 0.8, delay: 0.15 }}
                                 className="rounded-2xl border border-[#7A5C1E]/15 bg-white/80 backdrop-blur-sm shadow-sm overflow-hidden"
                             >
-                                {fam.categories.map((cat) => (
+                                {fam.categories.map((cat, catIndex) => (
                                     <ExpandableCategory
                                         key={cat.index}
                                         index={cat.index}
                                         title={cat.title}
                                         items={cat.items ?? []}
+                                        showNote={
+                                            fam.family.toLowerCase().includes("viscose") &&
+                                            catIndex === 0 &&
+                                            cat.title.toLowerCase().includes("plain")
+                                        }
                                     />
                                 ))}
                             </motion.div>

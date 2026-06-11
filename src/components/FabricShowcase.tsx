@@ -1,15 +1,82 @@
 "use client";
 
 import { useState, useRef, MouseEvent, TouchEvent, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface FabricItem {
+  id: number;
+  item: string;
+  base: string;
+  description: string;
+  imagePath: string;
+  denier: string;
+  fullTitle: string;
+}
+
+const fabricItems: FabricItem[] = [
+  {
+    id: 1,
+    item: "100 D ZYLO GOLD",
+    base: "VISCOSE",
+    description: "Fine denier yarn which gives the fabric a natural gold and tissue look",
+    imagePath: "/images/zylo.png",
+    denier: "100 D",
+    fullTitle: "100 D ZYLO GOLD",
+  },
+  {
+    id: 2,
+    item: "150 D VISCO CREPE",
+    base: "VISCOSE",
+    description: "Viscose sheen crepe with natural wrinkle for best feel and fall",
+    imagePath: "/images/viscosecrepe.png",
+    denier: "150 D",
+    fullTitle: "150 D VISCO CREPE",
+  },
+  {
+    id: 3,
+    item: "138 D SILKY TASPA",
+    base: "NYLON",
+    description: "Linen taspa look with soft feel and shine fabric",
+    imagePath: "/images/sikly.png",
+    denier: "138 D",
+    fullTitle: "138 D SILKY TASPA",
+  },
+];
+
+const preloadImages = (images: string[]) => {
+  images.forEach((src) => {
+    const img = new Image();
+    img.src = src;
+  });
+};
 
 export default function FabricShowcase() {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [isZoomActive, setIsZoomActive] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState<{ [key: string]: boolean }>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const directionRef = useRef(0);
+  const [direction, setDirection] = useState(0);
+  const isMouseInsideRef = useRef(false);
 
-  // Detect mobile on client side only to avoid hydration mismatch
+  const currentFabric = fabricItems[currentIndex];
+  const totalItems = fabricItems.length;
+
+  useEffect(() => {
+    const allImagePaths = fabricItems.map(item => item.imagePath);
+    preloadImages(allImagePaths);
+
+    allImagePaths.forEach(path => {
+      const img = new Image();
+      img.onload = () => {
+        setImagesLoaded(prev => ({ ...prev, [path]: true }));
+      };
+      img.src = path;
+    });
+  }, []);
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
@@ -17,10 +84,22 @@ export default function FabricShowcase() {
     checkMobile();
   }, []);
 
+  const handleNext = () => {
+    directionRef.current = 1;
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % totalItems);
+  };
+
+  const handlePrev = () => {
+    directionRef.current = -1;
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + totalItems) % totalItems);
+  };
+
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (isMobile) return;
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !isZoomActive) return;
 
     const { left, top, width, height } = container.getBoundingClientRect();
     const x = Math.max(0, Math.min(width, e.clientX - left));
@@ -30,7 +109,7 @@ export default function FabricShowcase() {
   };
 
   const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
-    if (!isMobile || !containerRef.current) return;
+    if (!isMobile || !containerRef.current || !isZoomActive) return;
     e.preventDefault();
 
     const container = containerRef.current;
@@ -43,33 +122,60 @@ export default function FabricShowcase() {
   };
 
   const handleTouchStart = () => {
-    if (isMobile) {
-      setIsZoomActive(true);
-    }
+    if (isMobile) setIsZoomActive(true);
   };
 
   const handleTouchEnd = () => {
-    if (isMobile) {
-      setIsZoomActive(false);
-    }
+    if (isMobile) setIsZoomActive(false);
   };
 
   const handleMouseEnter = () => {
     if (!isMobile) {
+      isMouseInsideRef.current = true;
       setIsZoomActive(true);
     }
   };
 
   const handleMouseLeave = () => {
     if (!isMobile) {
+      isMouseInsideRef.current = false;
       setIsZoomActive(false);
     }
+  };
+
+  const slideVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 100 : -100,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction > 0 ? -100 : 100,
+      opacity: 0,
+    }),
+  };
+
+  const textVariants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 30 : -30,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction > 0 ? -30 : 30,
+      opacity: 0,
+    }),
   };
 
   return (
     <section id="fabrics" className="relative py-32 px-6 md:px-12 bg-luxury-ivory">
       <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -94,41 +200,94 @@ export default function FabricShowcase() {
           </p>
         </motion.div>
 
-        {/* Dynamic Display Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Panel: Two simple divs for Item and Base */}
+          {/* Left Panel */}
           <div className="lg:col-span-4 flex flex-col space-y-6">
-            {/* Item div */}
-            <div className="text-left p-6 rounded-2xl border border-luxury-gold/30 bg-white/50 backdrop-blur-sm">
-              <span className="text-[10px] tracking-[0.3em] text-[#7A5C1E] font-semibold block mb-2 uppercase">
-                Item
-              </span>
-              <span className="font-display text-xl md:text-2xl text-luxury-charcoal font-light block">
-                Aurelia Brocade
-              </span>
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={`item-${currentIndex}`}
+                custom={direction}
+                variants={textVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="space-y-6"
+              >
+                <div className="text-left p-6 rounded-2xl border border-luxury-gold/30 bg-white/50 backdrop-blur-sm">
+                  <span className="text-[10px] tracking-[0.3em] text-[#7A5C1E] font-semibold block mb-2 uppercase">
+                    Item
+                  </span>
+                  <span className="font-display text-xl md:text-2xl text-luxury-charcoal font-light block" style={{ fontVariantNumeric: "lining-nums" }}>
+                    {currentFabric.item}
+                  </span>
+                </div>
+
+                <div className="text-left p-6 rounded-2xl border border-luxury-gold/30 bg-white/50 backdrop-blur-sm">
+                  <span className="text-[10px] tracking-[0.3em] text-[#7A5C1E] font-semibold block mb-2 uppercase">
+                    Base
+                  </span>
+                  <span className="font-display text-xl md:text-2xl text-luxury-charcoal font-light block">
+                    {currentFabric.base}
+                  </span>
+                </div>
+
+                <div className="pt-6 border-t border-luxury-gold/20">
+                  <div className="space-y-4">
+                    <p className="text-md font-light text-luxury-charcoal/70 leading-relaxed font-serif">
+                      {currentFabric.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Dots */}
+            <div className="flex items-center justify-center gap-2 pt-8">
+              {fabricItems.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    directionRef.current = idx > currentIndex ? 1 : -1;
+                    setDirection(directionRef.current);
+                    setCurrentIndex(idx);
+                  }}
+                  className={`transition-all duration-300 rounded-full ${idx === currentIndex
+                    ? "w-8 h-2 bg-luxury-gold"
+                    : "w-2 h-2 bg-luxury-gold/30 hover:bg-luxury-gold/60"
+                    }`}
+                  aria-label={`Go to fabric ${idx + 1}`}
+                />
+              ))}
             </div>
 
-            {/* Base div */}
-            <div className="text-left p-6 rounded-2xl border border-luxury-gold/30 bg-white/50 backdrop-blur-sm">
-              <span className="text-[10px] tracking-[0.3em] text-[#7A5C1E] font-semibold block mb-2 uppercase">
-                Base
+            {/* Mobile Arrows */}
+            <div className="flex items-center justify-center gap-4 lg:hidden pt-2">
+              <button
+                onClick={handlePrev}
+                className="p-3 rounded-full border border-luxury-gold/30 bg-white/50 hover:bg-luxury-gold/10 transition-colors"
+                aria-label="Previous fabric"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <span className="text-xs text-luxury-charcoal/50 font-serif">
+                {currentIndex + 1} / {totalItems}
               </span>
-              <span className="font-display text-xl md:text-2xl text-luxury-charcoal font-light block">
-                Lumiere Organza
-              </span>
-            </div>
-
-            {/* Description Section */}
-            <div className="pt-6 border-t border-luxury-gold/20">
-              <div className="space-y-4">
-                <p className="text-sm font-light text-luxury-charcoal/70 leading-relaxed font-serif">
-                  An opulent, highly structured textile utilizing real gold wire. Designed to catch light dynamically, this double-faced brocade displays deep champagne topography, creating a stunning metallic sheen for evening wear.
-                </p>
-              </div>
+              <button
+                onClick={handleNext}
+                className="p-3 rounded-full border border-luxury-gold/30 bg-white/50 hover:bg-luxury-gold/10 transition-colors"
+                aria-label="Next fabric"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
             </div>
           </div>
 
-          {/* Right Panel: Interactive Image with Magnifier */}
+          {/* Right Panel: Image + Magnifier */}
           <div className="lg:col-span-8">
             <div
               ref={containerRef}
@@ -140,15 +299,32 @@ export default function FabricShowcase() {
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
-              {/* Single Image */}
-              <img
-                src="/images/fabric_brocade.png"
-                alt="Aurelia Brocade Fabric"
-                className="h-full w-full select-none object-cover"
-              />
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.img
+                  key={`image-${currentIndex}`}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  src={currentFabric.imagePath}
+                  alt={currentFabric.item}
+                  className={`h-full w-full select-none object-cover transition-opacity duration-300 ${imagesLoaded[currentFabric.imagePath] ? "opacity-100" : "opacity-0"
+                    }`}
+                  onLoad={() => {
+                    setImagesLoaded(prev => ({ ...prev, [currentFabric.imagePath]: true }));
+                  }}
+                />
+              </AnimatePresence>
 
-              {/* Magnifying Glass Lens overlay */}
-              {isZoomActive && containerRef.current && (
+              {!imagesLoaded[currentFabric.imagePath] && (
+                <div className="absolute inset-0 flex items-center justify-center bg-luxury-ivory">
+                  <div className="w-8 h-8 border-2 border-luxury-gold/30 border-t-luxury-gold rounded-full animate-spin" />
+                </div>
+              )}
+
+              {isZoomActive && containerRef.current && imagesLoaded[currentFabric.imagePath] && (
                 <div
                   className="pointer-events-none absolute select-none rounded-full border-2 border-luxury-gold/60 bg-no-repeat shadow-2xl"
                   style={{
@@ -156,21 +332,20 @@ export default function FabricShowcase() {
                     top: `${zoomPos.y - 90}px`,
                     width: "180px",
                     height: "180px",
-                    backgroundImage: `url(/images/fabric_brocade.png)`,
+                    backgroundImage: `url(${currentFabric.imagePath})`,
                     backgroundSize: `${containerRef.current.clientWidth * 2.5}px ${containerRef.current.clientHeight * 2.5}px`,
                     backgroundPosition: `-${zoomPos.x * 2.5 - 90}px -${zoomPos.y * 2.5 - 90}px`,
+                    backgroundRepeat: "no-repeat",
                   }}
                 />
               )}
 
-              {/* Lens Instructions */}
-              <div className="pointer-events-none absolute right-4 top-4 z-20 rounded-full bg-luxury-charcoal/40 backdrop-blur-md px-3 py-1.5 border border-luxury-gold/10 transition-opacity duration-300 group-hover:opacity-0">
+              <div className="pointer-events-none absolute right-4 top-4 z-20 rounded-full bg-luxury-charcoal/40 backdrop-blur-md px-3 py-1.5 border border-luxury-gold/10 transition-opacity duration-300 group-hover:opacity-50">
                 <span className="text-[9px] tracking-[0.2em] text-luxury-ivory uppercase font-semibold">
                   {isMobile ? "TAP & HOLD TO INSPECT" : "HOVER TO INSPECT WEAVE"}
                 </span>
               </div>
 
-              {/* Mobile touch instruction overlay */}
               {isMobile && !isZoomActive && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none bg-black/20 opacity-0 group-active:opacity-100 transition-opacity duration-300">
                   <span className="text-xs uppercase tracking-[0.2em] text-white bg-black/50 px-4 py-2 rounded-full">
@@ -178,6 +353,34 @@ export default function FabricShowcase() {
                   </span>
                 </div>
               )}
+
+              {/* Desktop Arrow Overlays */}
+              <div className="absolute inset-y-0 left-0 right-0 z-10">
+                <button
+                  onClick={handlePrev}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-luxury-charcoal/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-all duration-300 hover:bg-luxury-gold/70 hover:scale-110 focus:outline-none"
+                  aria-label="Previous fabric"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <button
+                  onClick={handleNext}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-luxury-charcoal/60 backdrop-blur-md border border-white/30 flex items-center justify-center text-white transition-all duration-300 hover:bg-luxury-gold/70 hover:scale-110 focus:outline-none"
+                  aria-label="Next fabric"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="absolute bottom-4 right-4 bg-black/40 backdrop-blur-md px-2 py-1 rounded-full z-10">
+                <span className="text-[10px] text-white/80 font-mono">
+                  {String(currentIndex + 1).padStart(2, "0")} / {String(totalItems).padStart(2, "0")}
+                </span>
+              </div>
             </div>
           </div>
         </div>

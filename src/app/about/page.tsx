@@ -203,7 +203,7 @@ export default function About() {
                                 Forty years of <span className="italic text-[#7A5C1E]">spinning</span> beauty into being.
                             </>
                         }
-                        body="Founded in 1985, KAYEM Synthetics Pvt. Ltd. has built a strong reputation for delivering exceptional quality, innovation, and trusted business values in the textile industry. Over the years, KAYEM has emerged as one of India's leading manufacturers and processors of Speciality & Fancy Yarns in Nylon and Viscose. Our yarns cater to sarees, dress materials, curtains, carpets, and upholstery fabrics — present in every major yarn-consuming centre in the country."
+                        body="Founded in 1985, KAYEM Synthetics Pvt. Ltd. has built a strong reputation for delivering exceptional quality, innovation, and trusted business values in the textile industry. Over the years, KAYEM has emerged as one of India's leading manufacturers and processors of Speciality & Fancy Yarns in Nylon and Viscose. Our yarns cater to sarees, dress materials, curtains, carpets, and upholstery fabrics - present in every major yarn-consuming centre in the country."
                     />
 
                     {/* Mission Section */}
@@ -231,7 +231,7 @@ export default function About() {
                             <Section
                                 eyebrow="Our Mission"
                                 title={<>Engineer the <span className="italic text-[#7A5C1E]">unseen</span> craft.</>}
-                                body="To consistently deliver premium-quality Speciality & Fancy Yarns that meet the evolving needs of the textile industry — through uncompromising standards, technical mastery, and customised yarn developments built on long-term relationships."
+                                body="To consistently deliver premium-quality Speciality & Fancy Yarns that meet the evolving needs of the textile industry - through uncompromising standards, technical mastery, and customised yarn developments built on long-term relationships."
                             />
                         </div>
                     </div>
@@ -260,7 +260,7 @@ export default function About() {
                             <Section
                                 eyebrow="Our Vision"
                                 title={<>Set the <span className="italic text-[#7A5C1E]">benchmark</span> for tomorrow's fibres.</>}
-                                body="To be recognised as a global leader in Speciality & Fancy Yarns — redefining textile possibilities through advanced yarn technologies, creative product development, and sustainable growth practices that inspire beautiful fabrics worldwide."
+                                body="To be recognised as a global leader in Speciality & Fancy Yarns - redefining textile possibilities through advanced yarn technologies, creative product development, and sustainable growth practices that inspire beautiful fabrics worldwide."
                             />
                         </div>
                     </div>
