@@ -41,8 +41,8 @@ function MagneticButton({ children, className = "", variant = "primary", onClick
 }
 
 // ── Accordion Category ────────────────────────────────────────────────────────
-function ExpandableCategory({ index, title, items, showNote = false }: {
-    index: string; title: string; items: string[]; showNote?: boolean;
+function ExpandableCategory({ index, title, items, showNote = false, noteText = "" }: {
+    index: string; title: string; items: string[]; showNote?: boolean; noteText?: string;
 }) {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -87,11 +87,11 @@ function ExpandableCategory({ index, title, items, showNote = false }: {
                         className="overflow-hidden"
                     >
                         <div className="pb-6 sm:pb-8 px-4 sm:px-6">
-                            {/* Note for Viscose sections - shows for ALL accordions under Viscose */}
-                            {showNote && (
+                            {/* Note for Viscose sections with specific text */}
+                            {showNote && noteText && (
                                 <div className="mb-5 p-3 sm:p-4 rounded-lg bg-[#7A5C1E]/5 border-l-4 border-[#7A5C1E]">
                                     <p className="text-[11px] sm:text-xs text-black/70">
-                                        All Viscose ATY yarns are Jilin-based.
+                                        {noteText}
                                     </p>
                                 </div>
                             )}
@@ -205,6 +205,13 @@ export default function ProductsClient({ families }: { families: Family[] }) {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
+    const getNoteText = (title: string) => {
+        if (title.toLowerCase().includes("plain")) {
+            return "All Viscose ATY yarns are Jilin-based.";
+        }
+        return "All Viscose yarns are Jilin-based.";
+    };
+
     return (
         <>
             <Navbar />
@@ -305,6 +312,7 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                                         title={cat.title}
                                         items={cat.items ?? []}
                                         showNote={fam.family.toLowerCase().includes("viscose")}
+                                        noteText={getNoteText(cat.title)}
                                     />
                                 ))}
                             </motion.div>
