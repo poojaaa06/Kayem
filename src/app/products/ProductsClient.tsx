@@ -87,10 +87,10 @@ function ExpandableCategory({ index, title, items, showNote = false }: {
                         className="overflow-hidden"
                     >
                         <div className="pb-6 sm:pb-8 px-4 sm:px-6">
-                            {/* Note for Viscose Plain ATY section */}
+                            {/* Note for Viscose sections - shows for ALL accordions under Viscose */}
                             {showNote && (
                                 <div className="mb-5 p-3 sm:p-4 rounded-lg bg-[#7A5C1E]/5 border-l-4 border-[#7A5C1E]">
-                                    <p className="text-[11px] sm:text-xs text-black/70 ">
+                                    <p className="text-[11px] sm:text-xs text-black/70">
                                         All Viscose ATY yarns are Jilin-based.
                                     </p>
                                 </div>
@@ -304,11 +304,7 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                                         index={cat.index}
                                         title={cat.title}
                                         items={cat.items ?? []}
-                                        showNote={
-                                            fam.family.toLowerCase().includes("viscose") &&
-                                            catIndex === 0 &&
-                                            cat.title.toLowerCase().includes("plain")
-                                        }
+                                        showNote={fam.family.toLowerCase().includes("viscose")}
                                     />
                                 ))}
                             </motion.div>
