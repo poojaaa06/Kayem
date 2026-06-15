@@ -209,7 +209,7 @@ export default function ProductsClient({ families }: { families: Family[] }) {
         if (title.toLowerCase().includes("plain")) {
             return "All Viscose ATY yarns are Jilin-based.";
         }
-        return "All Viscose yarns are Jilin-based.";
+
     };
 
     return (
