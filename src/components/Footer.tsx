@@ -275,7 +275,7 @@ export default function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="/contact" className="hover:text-luxury-gold transition-colors duration-300">
+                  <a href="/contactus" className="hover:text-luxury-gold transition-colors duration-300">
                     Contact
                   </a>
                 </li>
