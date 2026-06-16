@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 
 export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: boolean }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
+  const [isUpdatesOpen, setIsUpdatesOpen] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [mobileUpdatesOpen, setMobileUpdatesOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -37,7 +38,15 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
         { name: "FABRIC", href: "/fabric", tag: "NEW LAUNCH" }
       ]
     },
-    { name: "LATEST UPDATES", href: "/blog" },
+    {
+      name: "LATEST UPDATES",
+      href: "#",
+      hasDropdown: true,
+      dropdownItems: [
+        { name: "BLOG POSTS", href: "/blog", tag: null },
+        { name: "LATEST YARNS", href: "/latest-yarns", tag: null }
+      ]
+    },
     { name: "CONTACT US", href: "/contactus" },
   ];
 
@@ -51,29 +60,20 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
           {/* Logo */}
           <div className="z-20">
             <a href="/" className="block">
-              {/* Mobile logo */}
               <img
                 src="/images/l.png"
                 alt="Logo"
                 className="h-24 w-auto object-contain lg:hidden"
                 style={{
-                  filter:
-                    forceDarkLogo || isScrolled
-                      ? "brightness(0) invert(1)"
-                      : "brightness(0) invert(0)",
+                  filter: forceDarkLogo || isScrolled ? "brightness(0) invert(1)" : "brightness(0) invert(0)",
                 }}
               />
-
-              {/* Desktop logo */}
               <img
                 src="/images/newlogo.png"
                 alt="Logo"
                 className="hidden lg:block h-12 md:h-14 w-auto object-contain"
                 style={{
-                  filter:
-                    forceDarkLogo || isScrolled
-                      ? "brightness(0) invert(1)"
-                      : "brightness(0) invert(0)",
+                  filter: forceDarkLogo || isScrolled ? "brightness(0) invert(1)" : "brightness(0) invert(0)",
                 }}
               />
             </a>
@@ -85,8 +85,14 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
               <div
                 key={link.name}
                 className="relative group"
-                onMouseEnter={() => link.hasDropdown && setIsProductsOpen(true)}
-                onMouseLeave={() => link.hasDropdown && setIsProductsOpen(false)}
+                onMouseEnter={() => {
+                  if (link.name === "PRODUCTS") setIsProductsOpen(true);
+                  if (link.name === "LATEST UPDATES") setIsUpdatesOpen(true);
+                }}
+                onMouseLeave={() => {
+                  if (link.name === "PRODUCTS") setIsProductsOpen(false);
+                  if (link.name === "LATEST UPDATES") setIsUpdatesOpen(false);
+                }}
               >
                 {link.hasDropdown ? (
                   <>
@@ -96,9 +102,8 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
                       <span className="absolute -bottom-1 left-0 h-px w-0 bg-gradient-to-r from-gold to-transparent transition-all duration-500 group-hover:w-full" />
                     </button>
 
-                    {/* Desktop Dropdown Menu */}
                     <AnimatePresence>
-                      {isProductsOpen && (
+                      {(link.name === "PRODUCTS" ? isProductsOpen : isUpdatesOpen) && (
                         <motion.div
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
@@ -125,10 +130,7 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
                     </AnimatePresence>
                   </>
                 ) : (
-                  <a
-                    href={link.href}
-                    className="relative group transition-colors hover:text-foreground"
-                  >
+                  <a href={link.href} className="relative group transition-colors hover:text-foreground">
                     {link.name}
                     <span className="absolute -bottom-1 left-0 h-px w-0 bg-gradient-to-r from-gold to-transparent transition-all duration-500 group-hover:w-full" />
                   </a>
@@ -137,29 +139,23 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
             ))}
           </nav>
 
-          {/* Mobile Hamburger Button */}
+          {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden relative z-20 h-8 w-8 flex flex-col items-center justify-center gap-1.5 rounded-full transition-all duration-300"
             aria-label="Toggle menu"
           >
-            <span
-              className={`block h-0.5 w-5 rounded-full transition-all duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""
-                } ${forceDarkLogo || isScrolled ? "bg-white" : "bg-black"}`}
-            />
-            <span
-              className={`block h-0.5 w-5 rounded-full transition-all duration-300 ${mobileMenuOpen ? "opacity-0" : ""
-                } ${forceDarkLogo || isScrolled ? "bg-white" : "bg-black"}`}
-            />
-            <span
-              className={`block h-0.5 w-5 rounded-full transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
-                } ${forceDarkLogo || isScrolled ? "bg-white" : "bg-black"}`}
-            />
+            <span className={`block h-0.5 w-5 rounded-full transition-all duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""
+              } ${forceDarkLogo || isScrolled ? "bg-white" : "bg-black"}`} />
+            <span className={`block h-0.5 w-5 rounded-full transition-all duration-300 ${mobileMenuOpen ? "opacity-0" : ""
+              } ${forceDarkLogo || isScrolled ? "bg-white" : "bg-black"}`} />
+            <span className={`block h-0.5 w-5 rounded-full transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""
+              } ${forceDarkLogo || isScrolled ? "bg-white" : "bg-black"}`} />
           </button>
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
@@ -171,7 +167,6 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
               onClick={() => setMobileMenuOpen(false)}
               className="fixed inset-0 z-40 bg-black/90 backdrop-blur-md lg:hidden"
             />
-
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
@@ -181,32 +176,31 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
             >
               <div className="flex flex-col items-center justify-center min-h-full px-8 py-24">
                 <div className="mb-12 text-center">
-                  <span className="font-display text-5xl tracking-tight text-[#D4AF37]">
-                    KAYEM
-                  </span>
+                  <span className="font-display text-5xl tracking-tight text-[#D4AF37]">KAYEM</span>
                   <div className="mt-4 h-px w-12 bg-[#D4AF37]/40 mx-auto" />
                 </div>
-
                 <nav className="flex flex-col items-center gap-6 w-full">
                   {navLinks.map((link, index) => (
                     <div key={link.name} className="w-full text-center">
                       {link.hasDropdown ? (
                         <>
                           <button
-                            onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
+                            onClick={() => {
+                              if (link.name === "PRODUCTS") setMobileProductsOpen(!mobileProductsOpen);
+                              if (link.name === "LATEST UPDATES") setMobileUpdatesOpen(!mobileUpdatesOpen);
+                            }}
                             className="text-2xl font-light tracking-wide text-white/70 hover:text-[#D4AF37] transition-colors duration-300 flex items-center justify-center gap-2 w-full"
                           >
                             {link.name}
                             <motion.div
-                              animate={{ rotate: mobileProductsOpen ? 180 : 0 }}
+                              animate={{ rotate: (link.name === "PRODUCTS" ? mobileProductsOpen : mobileUpdatesOpen) ? 180 : 0 }}
                               transition={{ duration: 0.3 }}
                             >
                               <ChevronDown size={16} />
                             </motion.div>
                           </button>
-
                           <AnimatePresence>
-                            {mobileProductsOpen && (
+                            {(link.name === "PRODUCTS" ? mobileProductsOpen : mobileUpdatesOpen) && (
                               <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: "auto" }}
@@ -221,7 +215,8 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
                                       href={item.href}
                                       onClick={() => {
                                         setMobileMenuOpen(false);
-                                        setMobileProductsOpen(false);
+                                        if (link.name === "PRODUCTS") setMobileProductsOpen(false);
+                                        if (link.name === "LATEST UPDATES") setMobileUpdatesOpen(false);
                                       }}
                                       initial={{ opacity: 0, x: 20 }}
                                       animate={{ opacity: 1, x: 0 }}
@@ -257,7 +252,6 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
                     </div>
                   ))}
                 </nav>
-
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -266,9 +260,7 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
                 >
                   <div className="flex items-center justify-center gap-4 mb-6">
                     <span className="h-px w-8 bg-[#D4AF37]/40" />
-                    <span className="text-[10px] uppercase tracking-[0.3em] text-white/50 font-semibold">
-                      Since 1985
-                    </span>
+                    <span className="text-[10px] uppercase tracking-[0.3em] text-white/50 font-semibold">Since 1985</span>
                     <span className="h-px w-8 bg-[#D4AF37]/40" />
                   </div>
                 </motion.div>
@@ -281,22 +273,10 @@ export default function Navbar({ forceDarkLogo = false }: { forceDarkLogo?: bool
   );
 }
 
-// ChevronDown Icon Component
 function ChevronDown({ size = 12, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <polyline points="6 9 12 15 18 9"></polyline>
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <polyline points="6 9 12 15 18 9" />
     </svg>
   );
 }

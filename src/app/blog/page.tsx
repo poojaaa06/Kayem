@@ -6,7 +6,7 @@ export const revalidate = 60
 export type Post = {
     slug: string
     img: string
-    category: string
+    // category: string
     title: string
     excerpt: string
     date: string

@@ -18,22 +18,7 @@ export const blogPost = defineType({
             options: { source: 'title', maxLength: 96 },
             validation: (R) => R.required(),
         }),
-        defineField({
-            name: 'category',
-            title: 'Category',
-            type: 'string',
-            options: {
-                list: [
-                    { title: 'Material Study', value: 'Material Study' },
-                    { title: 'Inside the Mill', value: 'Inside the Mill' },
-                    { title: 'Craft', value: 'Craft' },
-                    { title: 'Colour', value: 'Colour' },
-                    { title: 'Hands', value: 'Hands' },
-                    { title: 'Futures', value: 'Futures' },
-                ],
-            },
-            validation: (R) => R.required(),
-        }),
+        // REMOVED: category field completely
         defineField({
             name: 'img',
             title: 'Cover Image',
@@ -139,6 +124,6 @@ export const blogPost = defineType({
         { title: 'Publish Date (Newest)', name: 'dateDesc', by: [{ field: 'date', direction: 'desc' }] },
     ],
     preview: {
-        select: { title: 'title', media: 'img', subtitle: 'category' },
+        select: { title: 'title', media: 'img' }, // Removed subtitle: 'category'
     },
 })

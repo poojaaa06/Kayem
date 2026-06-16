@@ -76,10 +76,10 @@ function FeaturedCard({ post }: { post: Post }) {
                     </div>
                 </div>
                 <div className="flex flex-col gap-6 lg:col-span-5">
-                    <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]">
+                    {/* <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]">
                         <span className="h-px w-8 bg-[#7A5C1E]/50" />
                         {post.category}
-                    </div>
+                    </div> */}
                     <h2 className="font-display text-4xl font-light leading-[1.05] text-luxury-charcoal md:text-5xl">
                         {post.title}
                     </h2>
@@ -138,9 +138,9 @@ function PostCard({ post, idx }: { post: Post; idx: number }) {
                         <Image src={post.img} alt={post.title} fill
                             className="object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-110" />
                         <div className="absolute inset-0 bg-gradient-to-t from-luxury-cream via-luxury-cream/30 to-transparent opacity-90" />
-                        <div className="absolute left-4 top-4 rounded-full bg-[#7A5C1E]/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-white shadow-md">
+                        {/* <div className="absolute left-4 top-4 rounded-full bg-[#7A5C1E]/90 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.3em] text-white shadow-md">
                             {post.category}
-                        </div>
+                        </div> */}
                         <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#D4AF37]/10 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
                     </div>
                     <div className="flex flex-1 flex-col gap-4 p-6">
@@ -167,7 +167,7 @@ function PostCard({ post, idx }: { post: Post; idx: number }) {
 // Main component
 export default function BlogClient({ featured, posts }: { featured: Post | null; posts: Post[] }) {
     const heroRef = useRef<HTMLDivElement>(null);
-    const [active, setActive] = useState("All");
+    // const [active, setActive] = useState("All");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -182,7 +182,7 @@ export default function BlogClient({ featured, posts }: { featured: Post | null;
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const filtered = active === "All" ? posts : posts.filter((p) => p.category === active);
+    // const filtered = active === "All" ? posts : posts.filter((p) => p.category === active);
 
     return (
         <>
@@ -239,7 +239,7 @@ export default function BlogClient({ featured, posts }: { featured: Post | null;
                 )}
 
                 {/* FILTER CHIPS */}
-                <section className="relative mx-auto max-w-7xl px-6 pb-12 md:px-16">
+                {/* <section className="relative mx-auto max-w-7xl px-6 pb-12 md:px-16">
                     <div className="flex flex-wrap items-center gap-3">
                         {categories.map((c) => (
                             <button key={c} onClick={() => setActive(c)}
@@ -252,17 +252,16 @@ export default function BlogClient({ featured, posts }: { featured: Post | null;
                             </button>
                         ))}
                     </div>
-                </section>
+                </section> */}
 
-                {/* POSTS GRID */}
                 <section className="relative mx-auto max-w-7xl px-6 pb-32 md:px-16">
-                    {filtered.length === 0 ? (
+                    {posts.length === 0 ? (
                         <p className="text-center py-24 font-serif text-luxury-charcoal/40 text-lg">
                             No posts published yet.
                         </p>
                     ) : (
                         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                            {filtered.map((post, i) => (
+                            {posts.map((post, i) => (
                                 <PostCard key={post.slug} post={post} idx={i} />
                             ))}
                         </div>

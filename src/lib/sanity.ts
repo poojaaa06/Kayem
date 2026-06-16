@@ -32,13 +32,36 @@ export const YARN_FAMILIES_QUERY = `
   }
 `
 
-// ── Blog queries ──────────────────────────────────────────────────────────────
+// ── Latest Yarns queries (simplified - only name, description, image) ──────
+
+export const LATEST_YARNS_QUERY = `
+  *[_type == "latestYarn"] | order(_createdAt desc) {
+    "slug": slug.current,
+    "img": img.asset->url,
+    name,
+    description
+  }
+`
+
+export const LATEST_YARN_BY_SLUG_QUERY = `
+  *[_type == "latestYarn" && slug.current == $slug][0] {
+    "slug": slug.current,
+    "img": img.asset->url,
+    name,
+    description
+  }
+`
+
+export const ALL_LATEST_YARN_SLUGS_QUERY = `
+  *[_type == "latestYarn"] { "slug": slug.current }
+`
+
+// ── Blog queries (category removed) ──────────────────────────────────────────
 
 export const ALL_POSTS_QUERY = `
   *[_type == "blogPost"] | order(date desc) {
     "slug": slug.current,
     "img": img.asset->url,
-    category,
     title,
     excerpt,
     "date": date,
@@ -52,7 +75,6 @@ export const POST_BY_SLUG_QUERY = `
   *[_type == "blogPost" && slug.current == $slug][0] {
     "slug": slug.current,
     "img": img.asset->url,
-    category,
     title,
     excerpt,
     "date": date,
@@ -69,7 +91,6 @@ export const POST_BY_SLUG_QUERY = `
     "related": related[]-> {
       "slug": slug.current,
       "img": img.asset->url,
-      category,
       title,
       excerpt,
       "date": date,
