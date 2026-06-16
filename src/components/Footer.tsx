@@ -296,7 +296,7 @@ export default function Footer() {
                 </span>
                 <ArrowRight size={16} className="text-luxury-gold group-hover:translate-x-1 transition-transform" />
               </button>
-              <p className="text-[10px] text-luxury-ivory/40 leading-relaxed">
+              <p className="text-[10px] text-luxury-ivory/40 ">
                 Fill out our enquiry form and our team will get back to you within 24 hours.
               </p>
             </div>
