@@ -210,7 +210,7 @@ export default function LatestYarnsClient({ yarns }: { yarns: Yarn[] }) {
                             transition={{ delay: 0.6, duration: 1 }}
                             className="mb-4 sm:mb-6 font-sans text-[11px] font-semibold uppercase tracking-[0.4em] text-[#7A5C1E]"
                         >
-                            — The Spinner's Collection
+                            — Newest Yarn Innovations
                         </motion.p>
                         <h1 className="max-w-6xl font-display text-[15vw] font-light leading-[0.9] md:text-[8.5vw]">
                             {["Discover", "Our", "Latest", "Yarns"].map((w, i) => (
@@ -256,7 +256,7 @@ export default function LatestYarnsClient({ yarns }: { yarns: Yarn[] }) {
                         >
                             <div>
                                 <p className="mb-2 sm:mb-3 font-sans text-[10px] font-semibold uppercase tracking-[0.35em] text-[#7A5C1E]">
-                                    — Fresh from the Mill
+                                    — Newly Developed Yarns
                                 </p>
                                 <h3 className="max-w-3xl font-display text-3xl sm:text-4xl md:text-6xl font-light leading-[1.05] text-luxury-charcoal">
                                     New <span className="italic text-[#7A5C1E]">Arrivals</span>
