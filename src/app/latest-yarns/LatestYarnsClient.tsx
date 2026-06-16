@@ -191,7 +191,7 @@ export default function LatestYarnsClient({ yarns }: { yarns: Yarn[] }) {
                 <section ref={heroRef} className="relative min-h-[85vh] overflow-hidden pt-56 md:h-[90vh] md:pt-0">
                     <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
                         <Image
-                            src="/images/NYLON.JPEG"
+                            src="/images/producthero.jpeg"
                             alt="Latest yarn collections"
                             fill
                             className="object-cover"
@@ -212,14 +212,14 @@ export default function LatestYarnsClient({ yarns }: { yarns: Yarn[] }) {
                         >
                             — The Spinner's Collection
                         </motion.p>
-                        <h1 className="max-w-6xl font-display text-[12vw] font-light leading-[0.9] md:text-[7.5vw]">
-                            {["Latest", "Yarns"].map((w, i) => (
-                                <span key={i} className="mr-[0.25em] inline-block">
+                        <h1 className="max-w-6xl font-display text-[15vw] font-light leading-[0.9] md:text-[8.5vw]">
+                            {["Discover", "Our", "Latest", "Yarns"].map((w, i) => (
+                                <span key={i} className="mr-[0.15em] inline-block">
                                     <motion.span
                                         initial={{ y: "110%" }}
                                         animate={{ y: 0 }}
                                         transition={{ delay: 0.4 + i * 0.1, duration: 1.1, ease: [0.2, 0.8, 0.2, 1] }}
-                                        className={`inline-block ${i === 0 ? "text-luxury-charcoal" : "italic text-[#7A5C1E]"}`}
+                                        className={`inline-block ${i === 2 ? "italic text-[#7A5C1E]" : "text-luxury-charcoal"}`}
                                     >
                                         {w}
                                     </motion.span>
@@ -342,13 +342,11 @@ export default function LatestYarnsClient({ yarns }: { yarns: Yarn[] }) {
 
                 {/* ── CONNECT SECTION ── */}
                 <section className="relative overflow-hidden px-5 sm:px-6 py-20 sm:py-32 text-center md:px-16">
-                    {!isMobile && (
-                        <div className="absolute inset-0">
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#D4AF37]/15 via-transparent to-transparent" />
-                            <div className="absolute bottom-0 left-1/2 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-[#7A5C1E]/15 blur-3xl" />
-                            <div className="absolute top-0 left-1/2 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-[#D4AF37]/10 blur-3xl" />
-                        </div>
-                    )}
+                    <div className="absolute inset-0">
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#D4AF37]/15 via-transparent to-transparent" />
+                        <div className="absolute bottom-0 left-1/2 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-[#7A5C1E]/15 blur-3xl" />
+                        <div className="absolute top-0 left-1/2 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-[#D4AF37]/10 blur-3xl" />
+                    </div>
                     <div className="relative mx-auto max-w-3xl text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 40 }}
