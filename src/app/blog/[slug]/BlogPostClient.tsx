@@ -169,7 +169,7 @@ export default function BlogPostClient({ post }: { post: Post }) {
                         <div>
                             <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-[#7A5C1E]">Written by</p>
                             <p className="mt-1 font-display text-xl font-light text-luxury-charcoal">{post.author}</p>
-                            <p className="mt-1 font-serif text-sm text-luxury-charcoal/60">Studio voice from the Kayem mill floor, Surat.</p>
+
                         </div>
                     </motion.div>
                 </article>
