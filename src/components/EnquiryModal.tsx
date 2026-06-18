@@ -23,9 +23,36 @@ interface EnquiryModalProps {
     onClose: () => void;
 }
 
+// ── Validation helpers ──────────────────────────────────────────────────────
+const validateEmail = (email: string): boolean => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
+const validatePhone = (phone: string): boolean => {
+    // Remove spaces, dashes, parentheses
+    const cleaned = phone.replace(/[\s\-()]/g, '');
+    // Must start with +91 and then exactly 10 digits
+    return /^\+91\d{10}$/.test(cleaned);
+};
+
+const validateRequired = (value: string): boolean => value.trim().length > 0;
+
+// ── Input formatter for phone ──────────────────────────────────────────────
+const formatPhoneInput = (value: string): string => {
+    // Only digits and '+' are allowed
+    const cleaned = value.replace(/[^+\d]/g, '');
+    // Ensure '+' only at the start
+    if (cleaned.startsWith('+')) {
+        return '+' + cleaned.slice(1).replace(/[^0-9]/g, '');
+    } else {
+        // If no '+', strip everything except digits
+        return cleaned.replace(/[^0-9]/g, '');
+    }
+};
+
 export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
-    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mrevzrel"; // Replace with your Formspree endpoint
-    const RECAPTCHA_SITE_KEY = "6LcngwotAAAAAPmvzE7ajQ-FqMpLkaUyPOttNuc0"; // Replace with your Google Site Key
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mrevzrel";
+    const RECAPTCHA_SITE_KEY = "6LcngwotAAAAAPmvzE7ajQ-FqMpLkaUyPOttNuc0";
 
     const [formData, setFormData] = useState({
         name: "",
@@ -34,8 +61,27 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
         officeName: "",
         officeAddress: "",
         requirement: "",
-        additionalMessage: ""
+        additionalMessage: "",
     });
+
+    const [errors, setErrors] = useState({
+        name: "",
+        phone: "",
+        email: "",
+        officeName: "",
+        officeAddress: "",
+        requirement: "",
+    });
+
+    const [touched, setTouched] = useState({
+        name: false,
+        phone: false,
+        email: false,
+        officeName: false,
+        officeAddress: false,
+        requirement: false,
+    });
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [submitError, setSubmitError] = useState("");
@@ -46,7 +92,175 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
     const widgetIdRef = useRef<number | null>(null);
     const scriptLoadedRef = useRef(false);
 
-    // Load reCAPTCHA script when modal opens
+    // ── Validators per field ──────────────────────────────────────────────
+    const validateField = (name: string, value: string): string => {
+        switch (name) {
+            case "name":
+                return validateRequired(value) ? "" : "Full name is required.";
+            case "phone":
+                if (!validateRequired(value)) return "Phone number is required.";
+                if (!validatePhone(value)) return "Enter a valid Indian phone number: +91 followed by 10 digits (e.g., +91 98765 43210).";
+                return "";
+            case "email":
+                if (!validateRequired(value)) return "Email address is required.";
+                if (!validateEmail(value)) return "Enter a valid email address.";
+                return "";
+            case "officeName":
+                return validateRequired(value) ? "" : "Company name is required.";
+            case "officeAddress":
+                return validateRequired(value) ? "" : "Company address is required.";
+            case "requirement":
+                return validateRequired(value) ? "" : "Please tell us your requirement.";
+            default:
+                return "";
+        }
+    };
+
+    // ── Handlers ────────────────────────────────────────────────────────────
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        let newValue = value;
+
+        // Special handling for phone: format input
+        if (name === "phone") {
+            newValue = formatPhoneInput(value);
+        }
+
+        setFormData((prev) => ({ ...prev, [name]: newValue }));
+
+        if (touched[name as keyof typeof touched]) {
+            setErrors((prev) => ({ ...prev, [name]: validateField(name, newValue) }));
+        }
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setTouched((prev) => ({ ...prev, [name as keyof typeof touched]: true }));
+        setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
+    };
+
+    const resetForm = () => {
+        setFormData({
+            name: "",
+            phone: "",
+            email: "",
+            officeName: "",
+            officeAddress: "",
+            requirement: "",
+            additionalMessage: "",
+        });
+        setErrors({
+            name: "",
+            phone: "",
+            email: "",
+            officeName: "",
+            officeAddress: "",
+            requirement: "",
+        });
+        setTouched({
+            name: false,
+            phone: false,
+            email: false,
+            officeName: false,
+            officeAddress: false,
+            requirement: false,
+        });
+        setSubmitSuccess(false);
+        setSubmitError("");
+        if (widgetIdRef.current !== null && window.grecaptcha) {
+            window.grecaptcha.reset(widgetIdRef.current);
+        }
+        setCaptchaToken(null);
+        setCaptchaError(false);
+    };
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+
+        // Validate all fields before submission
+        const newErrors = {
+            name: validateField("name", formData.name),
+            phone: validateField("phone", formData.phone),
+            email: validateField("email", formData.email),
+            officeName: validateField("officeName", formData.officeName),
+            officeAddress: validateField("officeAddress", formData.officeAddress),
+            requirement: validateField("requirement", formData.requirement),
+        };
+        setErrors(newErrors);
+
+        // Mark all fields as touched to show errors
+        setTouched({
+            name: true,
+            phone: true,
+            email: true,
+            officeName: true,
+            officeAddress: true,
+            requirement: true,
+        });
+
+        const hasErrors = Object.values(newErrors).some((err) => err !== "");
+        if (hasErrors) {
+            const firstErrorField = document.querySelector(".field-error");
+            if (firstErrorField) firstErrorField.scrollIntoView({ behavior: "smooth", block: "center" });
+            return;
+        }
+
+        if (!captchaToken) {
+            setCaptchaError(true);
+            alert("Please verify that you're not a robot.");
+            return;
+        }
+
+        setIsSubmitting(true);
+        setSubmitError("");
+        setCaptchaError(false);
+
+        try {
+            const formDataToSend = new FormData();
+            formDataToSend.append("name", formData.name);
+            formDataToSend.append("phone", formData.phone);
+            formDataToSend.append("email", formData.email);
+            formDataToSend.append("office_name", formData.officeName);
+            formDataToSend.append("office_address", formData.officeAddress);
+            formDataToSend.append("requirement", formData.requirement);
+            formDataToSend.append("additional_message", formData.additionalMessage);
+            formDataToSend.append("g-recaptcha-response", captchaToken);
+
+            const response = await fetch(FORMSPREE_ENDPOINT, {
+                method: "POST",
+                body: formDataToSend,
+                headers: { Accept: "application/json" },
+            });
+
+            if (response.ok) {
+                setSubmitSuccess(true);
+                resetForm();
+
+                setTimeout(() => {
+                    setSubmitSuccess(false);
+                    onClose();
+                }, 2000);
+            } else {
+                const errorData = await response.json();
+                if (errorData?.errors?.captcha) {
+                    setSubmitError("reCAPTCHA verification failed. Please try again.");
+                    if (widgetIdRef.current !== null && window.grecaptcha) {
+                        window.grecaptcha.reset(widgetIdRef.current);
+                    }
+                    setCaptchaToken(null);
+                } else {
+                    setSubmitError("Failed to send enquiry. Please try again.");
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            setSubmitError("Failed to send enquiry. Please check your connection.");
+        }
+
+        setIsSubmitting(false);
+    };
+
+    // ── Load reCAPTCHA ─────────────────────────────────────────────────────
     useEffect(() => {
         if (!isOpen) return;
 
@@ -81,10 +295,8 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
                         }
                     }
                 }, 100);
-
                 setTimeout(() => clearInterval(checkGrecaptcha), 10000);
             };
-
             document.body.appendChild(script);
         } else if (window.grecaptcha && recaptchaRef.current && widgetIdRef.current === null) {
             window.grecaptcha.ready(() => {
@@ -103,96 +315,73 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
                 }
             });
         }
-
-        return () => {
-            // Keep widget for next time
-        };
     }, [isOpen, RECAPTCHA_SITE_KEY]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const resetForm = () => {
-        setFormData({
-            name: "",
-            phone: "",
-            email: "",
-            officeName: "",
-            officeAddress: "",
-            requirement: "",
-            additionalMessage: "",
-        });
-        if (widgetIdRef.current !== null && window.grecaptcha) {
-            window.grecaptcha.reset(widgetIdRef.current);
-        }
-        setCaptchaToken(null);
-    };
-
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-
-        if (!captchaToken) {
-            setCaptchaError(true);
-            alert("Please verify that you're not a robot.");
-            return;
-        }
-
-        setIsSubmitting(true);
-        setSubmitError("");
-        setCaptchaError(false);
-
-        try {
-            const formDataToSend = new FormData();
-            formDataToSend.append("name", formData.name);
-            formDataToSend.append("phone", formData.phone);
-            formDataToSend.append("email", formData.email);
-            formDataToSend.append("office_name", formData.officeName);
-            formDataToSend.append("office_address", formData.officeAddress);
-            formDataToSend.append("requirement", formData.requirement);
-            formDataToSend.append("additional_message", formData.additionalMessage);
-            formDataToSend.append("g-recaptcha-response", captchaToken);
-
-            const response = await fetch(FORMSPREE_ENDPOINT, {
-                method: "POST",
-                body: formDataToSend,
-                headers: {
-                    Accept: "application/json",
-                },
-            });
-
-            if (response.ok) {
-                setSubmitSuccess(true);
-                resetForm();
-
-                setTimeout(() => {
-                    setSubmitSuccess(false);
-                    onClose();
-                }, 2000);
-            } else {
-                const errorData = await response.json();
-                if (errorData?.errors?.captcha) {
-                    setSubmitError("reCAPTCHA verification failed. Please try again.");
-                    if (widgetIdRef.current !== null && window.grecaptcha) {
-                        window.grecaptcha.reset(widgetIdRef.current);
-                    }
-                    setCaptchaToken(null);
-                } else {
-                    setSubmitError("Failed to send enquiry. Please try again.");
-                }
+    useEffect(() => {
+        if (!isOpen) {
+            if (widgetIdRef.current !== null && window.grecaptcha) {
+                window.grecaptcha.reset(widgetIdRef.current);
             }
-        } catch (error) {
-            console.error(error);
-            setSubmitError("Failed to send enquiry. Please check your connection.");
+            setCaptchaToken(null);
         }
-
-        setIsSubmitting(false);
-    };
+    }, [isOpen]);
 
     if (!isOpen) return null;
+
+    // ── Render field ────────────────────────────────────────────────────────
+    const renderField = <K extends keyof typeof formData>(
+        label: string,
+        name: K,
+        type: "text" | "tel" | "email" = "text",
+        placeholder: string,
+        required: boolean = true,
+        rows?: number
+    ) => {
+        const value = formData[name];
+        const error = errors[name as keyof typeof errors];
+        const isTouched = touched[name as keyof typeof touched];
+        const showError = isTouched && error;
+
+        return (
+            <div className="space-y-1.5">
+                <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase">
+                    {label} {required && "*"}
+                </label>
+                {rows ? (
+                    <textarea
+                        name={name as string}
+                        rows={rows}
+                        value={value}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        placeholder={placeholder}
+                        required={required}
+                        className={`w-full bg-luxury-ivory/5 border rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none transition-colors resize-none ${showError
+                                ? "border-red-500 focus:border-red-500"
+                                : "border-luxury-gold/20 focus:border-luxury-gold/50"
+                            }`}
+                    />
+                ) : (
+                    <input
+                        type={type}
+                        name={name as string}
+                        value={value}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        placeholder={placeholder}
+                        required={required}
+                        className={`w-full bg-luxury-ivory/5 border rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none transition-colors ${showError
+                                ? "border-red-500 focus:border-red-500"
+                                : "border-luxury-gold/20 focus:border-luxury-gold/50"
+                            }`}
+                    />
+                )}
+                {showError && (
+                    <p className="text-red-400 text-xs mt-1 field-error">{error}</p>
+                )}
+            </div>
+        );
+    };
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -211,114 +400,18 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
                     </button>
                 </div>
 
-                {/* Modal Body - Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
-                                Full Name *
-                            </label>
-                            <input
-                                type="text"
-                                name="name"
-                                required
-                                value={formData.name}
-                                onChange={handleInputChange}
-                                className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
-                                placeholder="Your full name"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
-                                Phone Number *
-                            </label>
-                            <input
-                                type="tel"
-                                name="phone"
-                                required
-                                value={formData.phone}
-                                onChange={handleInputChange}
-                                className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
-                                placeholder="Your phone number"
-                            />
-                        </div>
+                        {renderField("Full Name", "name", "text", "Your full name")}
+                        {renderField("Phone Number", "phone", "tel", "+91 98765 43210")}
                     </div>
 
-                    <div>
-                        <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
-                            Email Address *
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            required
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
-                            placeholder="your@email.com"
-                        />
-                    </div>
+                    {renderField("Email Address", "email", "email", "your@email.com")}
+                    {renderField("Company Name", "officeName", "text", "Your company name")}
+                    {renderField("Company Address", "officeAddress", "text", "Complete office address")}
+                    {renderField("Requirement / Product Interest", "requirement", "text", "e.g., Nylon Yarns, Viscose Yarns, etc.")}
+                    {renderField("Additional Message", "additionalMessage", "text", "Tell us more about your requirements...", false, 4)}
 
-                    <div>
-                        <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
-                            Company Name *
-                        </label>
-                        <input
-                            type="text"
-                            name="officeName"
-                            required
-                            value={formData.officeName}
-                            onChange={handleInputChange}
-                            className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
-                            placeholder="Your company name"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
-                            Company Address *
-                        </label>
-                        <input
-                            type="text"
-                            name="officeAddress"
-                            required
-                            value={formData.officeAddress}
-                            onChange={handleInputChange}
-                            className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
-                            placeholder="Complete office address"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
-                            Requirement / Product Interest *
-                        </label>
-                        <input
-                            type="text"
-                            name="requirement"
-                            required
-                            value={formData.requirement}
-                            onChange={handleInputChange}
-                            className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors"
-                            placeholder="e.g., Nylon Yarns, Viscose Yarns, etc."
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-[10px] tracking-luxury text-luxury-gold uppercase mb-2">
-                            Additional Message
-                        </label>
-                        <textarea
-                            name="additionalMessage"
-                            rows={4}
-                            value={formData.additionalMessage}
-                            onChange={handleInputChange}
-                            className="w-full bg-luxury-ivory/5 border border-luxury-gold/20 rounded-lg px-4 py-2.5 text-sm text-luxury-ivory focus:outline-none focus:border-luxury-gold/50 transition-colors resize-none"
-                            placeholder="Tell us more about your requirements..."
-                        />
-                    </div>
-
-                    {/* reCAPTCHA v2 Checkbox Widget */}
                     <div className="flex justify-center py-2">
                         <div ref={recaptchaRef}></div>
                     </div>
@@ -333,7 +426,6 @@ export default function EnquiryModal({ isOpen, onClose }: EnquiryModalProps) {
                         <p className="text-red-500 text-xs text-center">{submitError}</p>
                     )}
 
-                    {/* Submit Button */}
                     <div className="pt-4">
                         <button
                             type="submit"

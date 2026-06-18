@@ -52,6 +52,19 @@ function MagneticButton({ children, className = "", variant = "primary", onClick
     );
 }
 
+// ── "New" badge with a shine sweep, like a retail sale flash ──────────────────
+function NewBadge({ size = "md" }: { size?: "md" | "sm" }) {
+    const sizing = size === "md"
+        ? "px-2.5 py-0.5 text-[8px]"
+        : "px-2 py-0.5 text-[7px]";
+    return (
+        <span className={`shine-badge relative inline-flex items-center overflow-hidden rounded-full bg-[#D4AF37] font-semibold uppercase tracking-wider text-white shadow-sm ${sizing}`}>
+            <span className="relative z-10">New</span>
+            <span className="shine-sweep" />
+        </span>
+    );
+}
+
 // ── Accordion Category ────────────────────────────────────────────────────────
 function ExpandableCategory({
     index,
@@ -93,11 +106,7 @@ function ExpandableCategory({
                             {title}
                         </span>
                         {/* ✅ Category-level "New" badge */}
-                        {isNew && (
-                            <span className="inline-flex items-center rounded-full bg-[#D4AF37] px-2.5 py-0.5 text-[8px] font-semibold uppercase tracking-wider text-white shadow-sm">
-                                New
-                            </span>
-                        )}
+                        {isNew && <NewBadge size="md" />}
                     </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -150,11 +159,7 @@ function ExpandableCategory({
                                     >
                                         {item.label}
                                         {/* ✅ Denier-level "New" badge */}
-                                        {item.isNew && (
-                                            <span className="inline-flex items-center rounded-full bg-[#D4AF37] px-2 py-0.5 text-[7px] font-bold uppercase tracking-wider text-white shadow-sm">
-                                                New
-                                            </span>
-                                        )}
+                                        {item.isNew && <NewBadge size="sm" />}
                                     </motion.span>
                                 ))}
                             </div>
@@ -259,6 +264,35 @@ export default function ProductsClient({ families }: { families: Family[] }) {
 
     return (
         <>
+            <style jsx global>{`
+        @keyframes double-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  10% {
+    transform: scale(1.15);
+    box-shadow: 0 0 18px rgba(244,196,48,0.8);
+  }
+
+  20% {
+    transform: scale(1);
+  }
+
+  30% {
+    transform: scale(1.12);
+    box-shadow: 0 0 14px rgba(244,196,48,0.6);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+}
+
+.shine-badge {
+  animation: double-pulse 1.6s infinite;
+}
+            `}</style>
             <Navbar />
             <main className="relative min-h-screen bg-luxury-cream text-luxury-charcoal">
 
