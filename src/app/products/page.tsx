@@ -8,7 +8,13 @@ type RawFamily = {
     family: string
     blurb: string
     image?: any
-    categories: { index: string; title: string; items: string[] }[]
+    categories: {
+        index: string
+        title: string
+        isNew?: boolean          // ← Category-level
+        items: string[]          // ← Still strings!
+        newDeniers?: string[]    // ← Deniers marked as "New"
+    }[]
 }
 
 export default async function ProductsPage() {

@@ -30,12 +30,30 @@ export const yarnCategory = defineType({
             type: 'number',
             description: 'Lower = shown first',
         }),
+        // ✅ Category-level "New" flag
+        defineField({
+            name: 'isNew',
+            title: 'Mark Category as New',
+            type: 'boolean',
+            description: 'Show a "New" badge on this entire category',
+            initialValue: false,
+        }),
+        // ✅ Keep items as strings (NO MIGRATION!)
         defineField({
             name: 'items',
             title: 'Deniers / Variants',
             type: 'array',
             of: [{ type: 'string' }],
-            description: 'Each entry = one denier tag e.g. "110 D Slub"',
+            description: 'Each entry = one denier tag',
+        }),
+        // ✅ NEW: Store which deniers are "New" (by their value)
+        // Simplified - just a text array without dropdown
+        defineField({
+            name: 'newDeniers',
+            title: 'New Deniers',
+            type: 'array',
+            of: [{ type: 'string' }],
+            description: 'Type the denier names that should show a "New" badge (must match exactly from the items list)',
         }),
     ],
     orderings: [

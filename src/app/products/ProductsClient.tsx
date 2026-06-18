@@ -9,8 +9,20 @@ import EnquiryModal from "@/components/EnquiryModal";
 import { ChevronDown } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-type Category = { index: string; title: string; items: string[] }
-type Family = { familyNum: string; family: string; img: string; blurb: string; categories: Category[] }
+type Category = {
+    index: string
+    title: string
+    isNew?: boolean
+    items: string[]           // ← Still strings!
+    newDeniers?: string[]     // ← Deniers with "New" badge
+}
+type Family = {
+    familyNum: string
+    family: string
+    img: string
+    blurb: string
+    categories: Category[]
+}
 
 // ── MagneticButton ────────────────────────────────────────────────────────────
 function MagneticButton({ children, className = "", variant = "primary", onClick }: {
@@ -41,10 +53,30 @@ function MagneticButton({ children, className = "", variant = "primary", onClick
 }
 
 // ── Accordion Category ────────────────────────────────────────────────────────
-function ExpandableCategory({ index, title, items, showNote = false, noteText = "" }: {
-    index: string; title: string; items: string[]; showNote?: boolean; noteText?: string;
+function ExpandableCategory({
+    index,
+    title,
+    items,
+    newDeniers = [],
+    showNote = false,
+    noteText = "",
+    isNew = false
+}: {
+    index: string
+    title: string
+    items: string[]           // ← Still strings!
+    newDeniers?: string[]     // ← Deniers with "New" badge
+    showNote?: boolean
+    noteText?: string
+    isNew?: boolean
 }) {
     const [isOpen, setIsOpen] = useState(false);
+
+    // Build the items with "New" flag
+    const allItems = items.map(label => ({
+        label,
+        isNew: newDeniers.includes(label)
+    }));
 
     return (
         <div className="border-b border-[#7A5C1E]/15 last:border-b-0">
@@ -56,9 +88,17 @@ function ExpandableCategory({ index, title, items, showNote = false, noteText = 
                     <span className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#7A5C1E]/10 flex items-center justify-center text-[11px] sm:text-xs font-bold text-[#7A5C1E]">
                         {index}
                     </span>
-                    <span className={`font-display text-base sm:text-xl md:text-2xl transition-colors duration-300 ${isOpen ? "text-[#7A5C1E]" : "text-[#2C2418]"}`}>
-                        {title}
-                    </span>
+                    <div className="flex items-center gap-3">
+                        <span className={`font-display text-base sm:text-xl md:text-2xl transition-colors duration-300 ${isOpen ? "text-[#7A5C1E]" : "text-[#2C2418]"}`}>
+                            {title}
+                        </span>
+                        {/* ✅ Category-level "New" badge */}
+                        {isNew && (
+                            <span className="inline-flex items-center rounded-full bg-[#D4AF37] px-2.5 py-0.5 text-[8px] font-semibold uppercase tracking-wider text-white shadow-sm">
+                                New
+                            </span>
+                        )}
+                    </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                     <span className="hidden sm:block text-[16px] sm:text-[16px] font-medium text-[#7A5C1E]/70 bg-[#7A5C1E]/8 px-2.5 py-1.5 rounded-full">
@@ -87,7 +127,6 @@ function ExpandableCategory({ index, title, items, showNote = false, noteText = 
                         className="overflow-hidden"
                     >
                         <div className="pb-6 sm:pb-8 px-4 sm:px-6">
-                            {/* Note for Viscose sections with specific text */}
                             {showNote && noteText && (
                                 <div className="mb-5 p-3 sm:p-4 rounded-lg bg-[#7A5C1E]/5 border-l-4 border-[#7A5C1E]">
                                     <p className="text-[11px] sm:text-xs text-black/70">
@@ -101,15 +140,21 @@ function ExpandableCategory({ index, title, items, showNote = false, noteText = 
                                 <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#7A5C1E]/10" />
                             </div>
                             <div className="flex flex-wrap gap-2 sm:gap-2.5">
-                                {items.map((item, idx) => (
+                                {allItems.map((item, idx) => (
                                     <motion.span
                                         key={idx}
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: idx * 0.01 }}
-                                        className="text-[11px] sm:text-[12px] md:text-[13px] px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-[#F5F0E8] border border-[#7A5C1E]/20 text-[#3D2E10] hover:border-[#7A5C1E]/50 hover:bg-white hover:shadow-sm transition-all duration-200"
+                                        className="relative inline-flex items-center gap-2 text-[11px] sm:text-[12px] md:text-[13px] px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full bg-[#F5F0E8] border border-[#7A5C1E]/20 text-[#3D2E10] hover:border-[#7A5C1E]/50 hover:bg-white hover:shadow-sm transition-all duration-200"
                                     >
-                                        {item}
+                                        {item.label}
+                                        {/* ✅ Denier-level "New" badge */}
+                                        {item.isNew && (
+                                            <span className="inline-flex items-center rounded-full bg-[#D4AF37] px-2 py-0.5 text-[7px] font-bold uppercase tracking-wider text-white shadow-sm">
+                                                New
+                                            </span>
+                                        )}
                                     </motion.span>
                                 ))}
                             </div>
@@ -209,7 +254,7 @@ export default function ProductsClient({ families }: { families: Family[] }) {
         if (title.toLowerCase().includes("plain")) {
             return "All Viscose ATY yarns are Jilin-based.";
         }
-
+        return "";
     };
 
     return (
@@ -311,8 +356,10 @@ export default function ProductsClient({ families }: { families: Family[] }) {
                                         index={cat.index}
                                         title={cat.title}
                                         items={cat.items ?? []}
+                                        newDeniers={cat.newDeniers ?? []}  // ← Pass new deniers
                                         showNote={fam.family.toLowerCase().includes("viscose")}
                                         noteText={getNoteText(cat.title)}
+                                        isNew={cat.isNew}  // ← Category-level
                                     />
                                 ))}
                             </motion.div>

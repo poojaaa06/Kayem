@@ -27,12 +27,14 @@ export const YARN_FAMILIES_QUERY = `
     "categories": *[_type == "yarnCategory" && references(^._id)] | order(order asc) {
       index,
       title,
-      items
+      isNew,        // ← Category-level "New" flag
+      items,        // ← Still strings!
+      newDeniers    // ← Which deniers are "New"
     }
   }
 `
 
-// ── Latest Yarns queries (simplified - only name, description, image) ──────
+// ── Latest Yarns queries ──────────────────────────────────────────────────────
 
 export const LATEST_YARNS_QUERY = `
   *[_type == "latestYarn"] | order(_createdAt desc) {
@@ -56,7 +58,7 @@ export const ALL_LATEST_YARN_SLUGS_QUERY = `
   *[_type == "latestYarn"] { "slug": slug.current }
 `
 
-// ── Blog queries (category removed) ──────────────────────────────────────────
+// ── Blog queries ──────────────────────────────────────────────────────────────
 
 export const ALL_POSTS_QUERY = `
   *[_type == "blogPost"] | order(date desc) {
