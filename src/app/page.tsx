@@ -9,6 +9,11 @@ import { Stats } from "@/components/Stats";
 import HeroFabricShowcase from "@/components/FabricShowcase";
 import { client, HERO_FABRIC_SHOWCASE_QUERY, HERO_YARN_SHOWCASE_QUERY } from '@/lib/sanity'
 
+
+
+export const revalidate = 60
+export const dynamic = 'force-dynamic'
+
 interface FabricItem {
   _id: string;
   order: number;
