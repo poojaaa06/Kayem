@@ -50,7 +50,7 @@ function YarnCard({ yarn, idx }: { yarn: Yarn; idx: number }) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
-                    {/* Improved "New" Badge */}
+                    {/* Improved "Neww" Badge */}
                     <div className="absolute top-4 left-4 z-10">
                         <div className="flex items-center gap-1.5 rounded-full bg-[#D4AF37] px-3.5 py-1.5 shadow-lg">
                             <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white">
