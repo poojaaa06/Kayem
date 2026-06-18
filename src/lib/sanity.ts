@@ -125,3 +125,25 @@ export const ALL_FABRICS_QUERY = `
     features
   }
 `
+
+export const HERO_FABRIC_SHOWCASE_QUERY = `
+  *[_type == "heroFabricShowcase"] | order(order asc) {
+    _id,
+    order,
+    item,
+    base,
+    description,
+    "imagePath": image.asset->url,
+    denier,
+    isNew
+  }
+`
+export const HERO_YARN_SHOWCASE_QUERY = `
+  *[_type == "heroYarnShowcase"] | order(order asc) {
+    _id,
+    order,
+    name,
+    desc,
+    "img": img.asset->url
+  }
+`

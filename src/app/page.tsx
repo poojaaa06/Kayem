@@ -1,30 +1,47 @@
 import Navbar from "@/components/Navbar";
-// import Hero from "@/components/Hero";
 import SequenceCanvas from "@/components/SequenceCanvas";
 import { Marquee } from "@/components/Marquee";
-import MaterialStory from "@/components/MaterialStory";
-import FabricShowcase from "@/components/FabricShowcase";
 import BrandReveal from "@/components/BrandReveal";
 import Footer from "@/components/Footer";
-import { YarnShowcase } from "@/components/YarnShowcase";
-import { ProcessPin } from "@/components/ProcessPin"
+import { HeroYarnShowcase } from "@/components/YarnShowcase";
+import { ProcessPin } from "@/components/ProcessPin";
 import { Stats } from "@/components/Stats";
-import InstagramFeed from "@/components/Instgram";
-export default function Home() {
+import HeroFabricShowcase from "@/components/FabricShowcase";
+import { client, HERO_FABRIC_SHOWCASE_QUERY, HERO_YARN_SHOWCASE_QUERY } from '@/lib/sanity'
+
+interface FabricItem {
+  _id: string;
+  order: number;
+  item: string;
+  base: string;
+  description: string;
+  imagePath: string;
+  denier?: string;
+  isNew?: boolean;
+}
+
+interface YarnItem {
+  _id: string;
+  order: number;
+  name: string;
+  desc: string;
+  img: string;
+}
+
+export default async function Home() {
+  const fabrics: FabricItem[] = await client.fetch(HERO_FABRIC_SHOWCASE_QUERY)
+  const yarns: YarnItem[] = await client.fetch(HERO_YARN_SHOWCASE_QUERY)
+
   return (
     <main className="relative min-h-screen">
       <Navbar />
-      {/* <Hero /> */}
       <SequenceCanvas />
       <Marquee />
-      <YarnShowcase />
+      <HeroYarnShowcase yarns={yarns} />
       <Stats />
-      {/* <MaterialStory /> */}
-      <FabricShowcase />
+      <HeroFabricShowcase fabrics={fabrics} />
       <ProcessPin />
-      {/* <InstagramFeed /> */}
       <BrandReveal />
-
       <Footer />
     </main>
   );

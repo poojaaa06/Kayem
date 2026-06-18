@@ -4,31 +4,15 @@ import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef, type MouseEvent } from "react";
 import Image from "next/image";
 
-const yarns = [
-    {
-        img: "/images/Nylon Aty Yarn.avif",
-        name: "Nylon Yarn",
-        code: "",
-        desc: "Premium nylon yarn with excellent coverage, bulk, and soft hand feel.",
-        count: ""
-    },
-    {
-        img: "/images/viscose cover page.jpg.jpeg",
-        name: "Viscose Yarn",
-        code: "",
-        desc: "Luxurious viscose fancy yarns with exceptional drape, sheen, and natural comfort.",
-        count: ""
-    },
-    {
-        img: "/images/Polyester top dyed.jpg.jpeg",
-        name: "Polyester Yarn",
-        code: "",
-        desc: "Premium catonic fancy dyed yarn for outstanding feel and luster.",
-        count: ""
-    },
-];
+interface YarnItem {
+    _id: string;
+    order: number;
+    name: string;
+    desc: string;
+    img: string;
+}
 
-function YarnCard({ y, idx }: { y: typeof yarns[number]; idx: number }) {
+function YarnCard({ y, idx }: { y: YarnItem; idx: number }) {
     const ref = useRef<HTMLDivElement>(null);
     const rx = useMotionValue(0);
     const ry = useMotionValue(0);
@@ -71,7 +55,6 @@ function YarnCard({ y, idx }: { y: typeof yarns[number]; idx: number }) {
                     alt={`${y.name} yarn — ${y.desc}`}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    loading="lazy"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
 
@@ -89,11 +72,7 @@ function YarnCard({ y, idx }: { y: typeof yarns[number]; idx: number }) {
                 />
 
                 <div className="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-luxury-ivory via-luxury-ivory/80 to-transparent">
-                    <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.3em] text-luxury-gold/70 font-semibold">
-                        <span>{y.code}</span>
-                        <span className="font-mono">{y.count}</span>
-                    </div>
-                    <h3 className="mt-2 font-display text-2xl text-luxury-charcoal">{y.name}</h3>
+                    <h3 className="font-display text-2xl text-luxury-charcoal">{y.name}</h3>
                     <p className="mt-2 text-sm text-luxury-charcoal/60 leading-relaxed">{y.desc}</p>
                 </div>
 
@@ -103,7 +82,9 @@ function YarnCard({ y, idx }: { y: typeof yarns[number]; idx: number }) {
     );
 }
 
-export function YarnShowcase() {
+export function HeroYarnShowcase({ yarns }: { yarns: YarnItem[] }) {
+    const displayYarns = yarns || [];
+
     return (
         <section id="collection" className="relative py-32 px-6 md:px-12 overflow-hidden">
             {/* Rich gradient background */}
@@ -133,10 +114,19 @@ export function YarnShowcase() {
                     </p>
                 </motion.div>
 
-                {/* 3-column grid: each takes 1/3 of width on large screens */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                    {yarns.map((y, i) => <YarnCard key={y.code} y={y} idx={i} />)}
-                </div>
+                {displayYarns.length === 0 ? (
+                    <div className="text-center py-20">
+                        <p className="text-luxury-charcoal/50 font-serif text-lg">
+                            No yarns available yet. Add some in Sanity Studio.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                        {displayYarns.map((y, i) => (
+                            <YarnCard key={y._id} y={y} idx={i} />
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );

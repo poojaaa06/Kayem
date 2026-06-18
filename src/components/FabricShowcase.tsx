@@ -4,44 +4,15 @@ import { useState, useRef, MouseEvent, TouchEvent, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface FabricItem {
-  id: number;
+  _id: string;
+  order: number;
   item: string;
   base: string;
   description: string;
   imagePath: string;
-  denier: string;
-  fullTitle: string;
+  denier?: string;
+  isNew?: boolean;
 }
-
-const fabricItems: FabricItem[] = [
-  {
-    id: 1,
-    item: "100 D ZYLO GOLD",
-    base: "VISCOSE",
-    description: "Fine denier yarn which gives the fabric a natural gold and tissue look",
-    imagePath: "/images/zylo.png",
-    denier: "100 D",
-    fullTitle: "100 D ZYLO GOLD",
-  },
-  {
-    id: 2,
-    item: "150 D VISCO CREPE",
-    base: "VISCOSE",
-    description: "Viscose sheen crepe with natural wrinkle for best feel and fall",
-    imagePath: "/images/viscosecrepe.png",
-    denier: "150 D",
-    fullTitle: "150 D VISCO CREPE",
-  },
-  {
-    id: 3,
-    item: "138 D SILKY TASPA",
-    base: "NYLON",
-    description: "Linen taspa look with soft feel and shine fabric",
-    imagePath: "/images/sikly.png",
-    denier: "138 D",
-    fullTitle: "138 D SILKY TASPA",
-  },
-];
 
 const preloadImages = (images: string[]) => {
   images.forEach((src) => {
@@ -50,19 +21,17 @@ const preloadImages = (images: string[]) => {
   });
 };
 
-export default function FabricShowcase() {
+export default function HeroFabricShowcase({ fabrics }: { fabrics: FabricItem[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [isZoomActive, setIsZoomActive] = useState(false);
-  // Covers phones AND tablets — anything with a touch screen
   const [isTouch, setIsTouch] = useState(false);
   const [imagesLoaded, setImagesLoaded] = useState<{ [key: string]: boolean }>({});
   const containerRef = useRef<HTMLDivElement | null>(null);
   const directionRef = useRef(0);
   const [direction, setDirection] = useState(0);
-  const isMouseInsideRef = useRef(false);
 
-  const currentFabric = fabricItems[currentIndex];
+  const fabricItems = fabrics || [];
   const totalItems = fabricItems.length;
 
   useEffect(() => {
@@ -73,32 +42,69 @@ export default function FabricShowcase() {
       img.onload = () => setImagesLoaded((prev) => ({ ...prev, [path]: true }));
       img.src = path;
     });
-  }, []);
+  }, [fabricItems]);
 
   useEffect(() => {
-    // Touch detection: covers phones, iPads, Android tablets, Surface, etc.
     setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
   }, []);
 
-  // Non-passive touch listener so preventDefault() actually blocks scroll
+  // Non-passive touch listener
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
     const onTouchMove = (e: globalThis.TouchEvent) => {
       if (!isZoomActive) return;
-      e.preventDefault(); // blocks page scroll while zooming
+      e.preventDefault();
 
       const touch = e.touches[0];
-      const { left, top, width, height } = el.getBoundingClientRect();
-      const x = Math.max(0, Math.min(width, touch.clientX - left));
-      const y = Math.max(0, Math.min(height, touch.clientY - top));
+      const rect = el.getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width, touch.clientX - rect.left));
+      const y = Math.max(0, Math.min(rect.height, touch.clientY - rect.top));
       setZoomPos({ x, y });
     };
 
     el.addEventListener("touchmove", onTouchMove, { passive: false });
     return () => el.removeEventListener("touchmove", onTouchMove);
   }, [isZoomActive]);
+
+  if (totalItems === 0) {
+    return (
+      <section id="fabrics" className="relative py-32 px-6 md:px-12 bg-luxury-ivory">
+        <div className="max-w-7xl mx-auto">
+          {/* Header always visible */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.9 }}
+            className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-20"
+          >
+            <div>
+              <p className="text-[12px] uppercase tracking-[0.4em] text-[#7A5C1E] font-semibold mb-4 flex items-center gap-3">
+                <span className="h-px w-8 bg-[#7A5C1E] inline-block" />
+                THE CATALOGUE
+              </p>
+              <h2 className="font-display text-5xl md:text-7xl font-light leading-[0.95] text-luxury-charcoal">
+                Luxury Yarns.<br />
+                <span className="italic text-luxury-gold">Crafted with precision</span>
+              </h2>
+            </div>
+            <p className="max-w-md text-luxury-charcoal/60 leading-relaxed font-serif text-md">
+              Hover over the showcase image to magnify the weft structure.
+            </p>
+          </motion.div>
+          <div className="text-center py-20">
+            <p className="text-luxury-charcoal/50 font-serif text-lg">
+              No fabrics available yet. Add some in Sanity Studio.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const currentFabric = fabricItems[currentIndex];
 
   const handleNext = () => {
     directionRef.current = 1;
@@ -117,9 +123,9 @@ export default function FabricShowcase() {
     const container = containerRef.current;
     if (!container || !isZoomActive) return;
 
-    const { left, top, width, height } = container.getBoundingClientRect();
-    const x = Math.max(0, Math.min(width, e.clientX - left));
-    const y = Math.max(0, Math.min(height, e.clientY - top));
+    const rect = container.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    const y = Math.max(0, Math.min(rect.height, e.clientY - rect.top));
     setZoomPos({ x, y });
   };
 
@@ -127,13 +133,12 @@ export default function FabricShowcase() {
     if (!isTouch) return;
     setIsZoomActive(true);
 
-    // Capture initial position immediately on touch start too
     const container = containerRef.current;
     if (!container) return;
     const touch = e.touches[0];
-    const { left, top, width, height } = container.getBoundingClientRect();
-    const x = Math.max(0, Math.min(width, touch.clientX - left));
-    const y = Math.max(0, Math.min(height, touch.clientY - top));
+    const rect = container.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width, touch.clientX - rect.left));
+    const y = Math.max(0, Math.min(rect.height, touch.clientY - rect.top));
     setZoomPos({ x, y });
   };
 
@@ -143,14 +148,12 @@ export default function FabricShowcase() {
 
   const handleMouseEnter = () => {
     if (!isTouch) {
-      isMouseInsideRef.current = true;
       setIsZoomActive(true);
     }
   };
 
   const handleMouseLeave = () => {
     if (!isTouch) {
-      isMouseInsideRef.current = false;
       setIsZoomActive(false);
     }
   };
@@ -170,6 +173,7 @@ export default function FabricShowcase() {
   return (
     <section id="fabrics" className="relative py-32 px-6 md:px-12 bg-luxury-ivory">
       <div className="max-w-7xl mx-auto">
+        {/* ── Header Section ── */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -184,7 +188,7 @@ export default function FabricShowcase() {
             </p>
             <h2 className="font-display text-5xl md:text-7xl font-light leading-[0.95] text-luxury-charcoal">
               Luxury Yarns.<br />
-              <span className="italic text-luxury-gold">Crafted with precision </span>
+              <span className="italic text-luxury-gold">Crafted with precision</span>
             </h2>
           </div>
           <p className="max-w-md text-luxury-charcoal/60 leading-relaxed font-serif text-md">
@@ -245,8 +249,8 @@ export default function FabricShowcase() {
                     setCurrentIndex(idx);
                   }}
                   className={`transition-all duration-300 rounded-full ${idx === currentIndex
-                      ? "w-8 h-2 bg-luxury-gold"
-                      : "w-2 h-2 bg-luxury-gold/30 hover:bg-luxury-gold/60"
+                    ? "w-8 h-2 bg-luxury-gold"
+                    : "w-2 h-2 bg-luxury-gold/30 hover:bg-luxury-gold/60"
                     }`}
                   aria-label={`Go to fabric ${idx + 1}`}
                 />
@@ -289,7 +293,6 @@ export default function FabricShowcase() {
               onMouseLeave={handleMouseLeave}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
-            // onTouchMove intentionally omitted — handled via non-passive useEffect above
             >
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.img
@@ -316,6 +319,7 @@ export default function FabricShowcase() {
                 </div>
               )}
 
+              {/* Zoom Magnifier */}
               {isZoomActive && containerRef.current && imagesLoaded[currentFabric.imagePath] && (
                 <div
                   className="pointer-events-none absolute select-none rounded-full border-2 border-luxury-gold/60 bg-no-repeat shadow-2xl"
@@ -328,6 +332,7 @@ export default function FabricShowcase() {
                     backgroundSize: `${containerRef.current.clientWidth * 2.5}px ${containerRef.current.clientHeight * 2.5}px`,
                     backgroundPosition: `-${zoomPos.x * 2.5 - 90}px -${zoomPos.y * 2.5 - 90}px`,
                     backgroundRepeat: "no-repeat",
+                    borderRadius: "50%",
                   }}
                 />
               )}
