@@ -319,8 +319,8 @@ export default function Contact() {
                         placeholder={placeholder}
                         required={required}
                         className={`w-full bg-luxury-ivory/5 border rounded-xl px-4 py-3 text-sm text-luxury-ivory focus:outline-none transition-colors resize-none ${showError
-                                ? "border-red-500 focus:border-red-500"
-                                : "border-luxury-gold/20 focus:border-luxury-gold/50"
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-luxury-gold/20 focus:border-luxury-gold/50"
                             }`}
                     />
                 ) : (
@@ -333,8 +333,8 @@ export default function Contact() {
                         placeholder={placeholder}
                         required={required}
                         className={`w-full bg-luxury-ivory/5 border rounded-xl px-4 py-3 text-sm text-luxury-ivory focus:outline-none transition-colors ${showError
-                                ? "border-red-500 focus:border-red-500"
-                                : "border-luxury-gold/20 focus:border-luxury-gold/50"
+                            ? "border-red-500 focus:border-red-500"
+                            : "border-luxury-gold/20 focus:border-luxury-gold/50"
                             }`}
                     />
                 )}
@@ -364,7 +364,7 @@ export default function Contact() {
     const contactInfo = [
         {
             icon: MapPin,
-            title: "CORPORATE OFFICE",
+            title: "REGISTERED OFFICE",
             details: ["A-802, 8th Floor, Swastik Universal,", "Near Valentine Cinema, Piplod,", "Surat - 395007, Gujarat, India"],
             link: "https://maps.app.goo.gl/TPiHLauBwo3deBvA8?g_st=aw",
             linkText: "Open in Maps →"

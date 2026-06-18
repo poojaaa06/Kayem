@@ -215,7 +215,7 @@ export default function Footer() {
               </span>
               <ul className="space-y-4 text-xs font-light text-luxury-ivory/60 tracking-luxury">
                 <li>
-                  <span className="text-luxury-ivory block font-medium mb-1">CORPORATE OFFICE</span>
+                  <span className="text-luxury-ivory block font-medium mb-1">REGISTERED OFFICE</span>
                   <a
                     href="https://maps.app.goo.gl/TPiHLauBwo3deBvA8?g_st=aw"
                     target="_blank"
