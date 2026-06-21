@@ -17,10 +17,15 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "KAYEM | Haute Couture Luxury Textiles & Weaving",
-  description: "Experience the cinematic journey of KAYEM haute couture textiles...",
+  title: "Kayem Synthetics Pvt Ltd",
+  description:
+    "Kayem Synthetics Pvt Ltd - Premium textile manufacturing, weaving, and fabric solutions.",
+  icons: {
+    icon: "images/kayemlogo.jpeg",
+    shortcut: "images/kayemlogo.jpeg",
+    apple: "images/kayemlogo.jpeg",
+  },
 };
-
 export default function RootLayout({
   children,
 }: Readonly<{
