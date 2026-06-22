@@ -7,7 +7,7 @@ const stats = [
     { v: 40, suffix: "+", label: "Years of expertise" },
     { v: 150, suffix: "+", label: "Products Variants" },
 
-    { v: 400, suffix: "+", label: "Trusted Weavers" },
+    { v: 400, suffix: "+", label: "Trusted Customers" },
 ];
 
 function Counter({ to, suffix, onComplete }: { to: number; suffix: string; onComplete?: () => void }) {

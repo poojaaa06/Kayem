@@ -21,10 +21,8 @@ export const metadata: Metadata = {
   description:
     "Kayem Synthetics Pvt Ltd - Premium textile manufacturing, weaving, and fabric solutions.",
   icons: {
-    icon: "images/kayemlogo.jpeg",
-    shortcut: "images/kayemlogo.jpeg",
-    apple: "images/kayemlogo.jpeg",
-  },
+    icon: "/favicon.ico",
+  }
 };
 export default function RootLayout({
   children,
