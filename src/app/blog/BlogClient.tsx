@@ -255,16 +255,22 @@ export default function BlogClient({ featured, posts }: { featured: Post | null;
                 </section> */}
 
                 <section className="relative mx-auto max-w-7xl px-6 pb-32 md:px-16">
-                    {posts.length === 0 ? (
+                    {/* Only show the "no posts" message if there is no featured post AND no other posts */}
+                    {!featured && posts.length === 0 && (
                         <p className="text-center py-24 font-serif text-luxury-charcoal/40 text-lg">
                             No posts published yet.
                         </p>
-                    ) : (
-                        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                            {posts.map((post, i) => (
-                                <PostCard key={post.slug} post={post} idx={i} />
-                            ))}
-                        </div>
+                    )}
+
+                    {/* Show the grid only if there are posts in the 'rest' array */}
+                    {posts.length > 0 && (
+                        <section className="relative mx-auto max-w-7xl px-6 pb-32 md:px-16">
+                            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                                {posts.map((post, i) => (
+                                    <PostCard key={post.slug} post={post} idx={i} />
+                                ))}
+                            </div>
+                        </section>
                     )}
                 </section>
 
